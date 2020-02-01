@@ -22,8 +22,8 @@ import { ViewLendDetailsComponent } from './components/dashboard/lender-dashboar
 const routes = [
   { path: "home", component: LoginComponent }, 
   { path: "dashboard", component: DashboardComponent }, 
-  { path: "lendpart", component: PartLendComponent},
-  { path: "viewlend", component: ViewLendDetailsComponent},
+  { path: "lend/:id", component: PartLendComponent},
+  { path: "view/:id", component: ViewLendDetailsComponent},
   { path: "usdcoin", component: USDCoinComponent }, 
   { path: '**', component: LoginComponent },
   

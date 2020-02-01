@@ -26,7 +26,8 @@ export class DashboardComponent implements OnInit {
     private web3Service: Web3Service
   ) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+    console.log("refresh!");
     let userAddress = this.localStorageService.getUser();
     if (userAddress == null) {
       alert("Invalid user session, please login again..");
@@ -34,7 +35,7 @@ export class DashboardComponent implements OnInit {
       return;
     }
     // get user account
-    this.account = this.web3Service.getAccountOf(userAddress);
+    this.account = await this.web3Service.getAccountOf(userAddress);
     if (this.account == null) {
       alert("Error in fetching user account, please login again..");
       this.router.navigateByUrl('/login');

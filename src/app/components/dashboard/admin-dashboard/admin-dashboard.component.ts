@@ -94,6 +94,10 @@ export class AdminDashboardComponent implements OnInit {
     }
   }
 
+  async sendCoinsToAllLenders(){
+    
+  }
+
   async getBalance() {
     console.log('Refreshing balance');
 
