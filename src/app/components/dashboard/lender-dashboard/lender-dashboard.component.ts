@@ -46,7 +46,7 @@ export class LenderDashboardComponent implements OnInit {
     
   }
 
-  lendAllLoanApplication(application) {
+  async lendAllLoanApplication(application) {
     //first check the status
     if (application["status"] == "LendCompleted"){
       alert("This application get enough lend. You cannot lend more.")
@@ -57,7 +57,7 @@ export class LenderDashboardComponent implements OnInit {
     let currentAmount=this.calculateAmount(application);
     let lendDetail = {
       ID: Date.now(),
-      lender:this.web3Service.getAccountOf(this.userAddress),
+      lender:await this.web3Service.getAccountOf(this.userAddress),
       amount: application.totalLoanAmount - currentAmount,
     }
     application["status"] = "LendCompleted";
@@ -77,7 +77,6 @@ export class LenderDashboardComponent implements OnInit {
 
     this.localStorageService.setUser(this.userAddress);
     this.localStorageService.setApplication(application);
-    this.router.navigateByUrl('/lendpart');
   }
 
   //calculate the exsiting lend detail records
@@ -94,7 +93,6 @@ export class LenderDashboardComponent implements OnInit {
   view(application){
     this.localStorageService.setUser(this.userAddress);
     this.localStorageService.setApplication(application);
-    this.router.navigateByUrl('/viewlend');
   }
 
 }

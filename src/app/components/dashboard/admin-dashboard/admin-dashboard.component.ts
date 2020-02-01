@@ -17,8 +17,8 @@ export class AdminDashboardComponent implements OnInit {
     this.refresh();
   }
 
-  refresh() {
-    let loanApplications = this.localStorageService.getLoanApplications();
+  async refresh() {
+    let loanApplications = await this.localStorageService.getLoanApplications();
     for(let loanApplication of loanApplications) {
       let borrowerAccount = this.web3Service.getAccountOf(loanApplication.borrower);
       loanApplication['borrower'] = borrowerAccount;

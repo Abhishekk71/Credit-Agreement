@@ -20,8 +20,8 @@ export class BorrowerDashboardComponent implements OnInit {
   constructor(private router: Router,
     private localStorageService: LocalStorageService, ) { }
 
-  ngOnInit() {
-    let userAddress = this.localStorageService.getUser();
+  async ngOnInit() {
+    let userAddress = await this.localStorageService.getUser();
     if (userAddress == null) {
       alert("Invalid user session, please login again..");
       this.router.navigateByUrl('/login');
@@ -41,7 +41,6 @@ export class BorrowerDashboardComponent implements OnInit {
       rateOfInterest: this.rateOfInterest
     }
 
-    console.log(loanApplication);
     this.localStorageService.addLoanApplication(loanApplication);
 
     alert("Your application was successfully submitted");
