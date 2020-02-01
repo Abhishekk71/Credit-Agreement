@@ -1,27 +1,60 @@
-<table class="table table-stripped">
-    <thead>
-        <th>Name</th>
-        <th>Applicant</th>
-        <th>Total Amount Requested</th>
-        <th>Type</th>
-        <th>Term</th>
-        <th>Rate of Interest</th>
-        <th>Actions</th>
-    </thead>
-    <tbody>
-        <tr *ngFor="let application of loanApplications">
-            <ng-container *ngIf="!application.status && application.status != 'REJECTED'">
-                <td>{{application.name}}</td>
-                <td>{{application.borrower.name}}</td>
-                <td>{{application.totalLoanAmount}}</td>
-                <td>{{application.type}}</td>
-                <td>{{application.term}}</td>
-                <td>{{application.rateOfInterest}}</td>
-                <td>
-                    <button class="btn btn-sm btn-primary m-1" (click)="approveLoanApplication(application)">Approve</button>
-                    <button class="btn btn-sm btn-danger m-1" (click)="rejectLoanApplication(application)">Reject</button>
-                </td>
-            </ng-container>
-        </tr>
-    </tbody>
-</table>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="split-tab" data-toggle="tab" href="#split" role="tab" aria-controls="split" aria-selected="true">Split Coin</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="view-tab" data-toggle="tab" href="#view" role="tab" aria-controls="view" aria-selected="false">View Application</a>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+
+    <div class="tab-pane fade show active" id="split" role="tabpanel" aria-labelledby="split-tab">
+        <div class="row">
+            <div class="form-group col-6">
+                <label for="">Coins to send</label>
+                <input class="form-control" type="number" name="" [(ngModel)]="amount" />
+                <label for="">Select to account</label>
+                <select class="form-control" [(ngModel)]="receiver">
+                  <ng-container *ngIf="accounts">
+                    <option *ngFor="let account of accounts" [value]="account.address">{{account.name}} - [{{account.type}}]</option>
+                  </ng-container>
+                </select>
+                <button class="btn btn-primary my-2 px-3" (click)="sendCoin()">Send</button>
+                <button class="btn btn-primary my-2 ml-2 px-6" (click)="sendCoinsToAllLenders()">Send to all lenders</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="tab-pane fade" id="view" role="tabpanel" aria-labelledby="view-tab">
+        <table class="table table-stripped">
+            <thead>
+                <th>Name</th>
+                <th>Applicant</th>
+                <th>Total Amount Requested</th>
+                <th>Type</th>
+                <th>Term</th>
+                <th>Rate of Interest</th>
+                <th>Actions</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let application of loanApplications">
+                    <ng-container *ngIf="!application.status && application.status != 'REJECTED'">
+                        <td>{{application.name}}</td>
+                        <td>{{application.borrower.name}}</td>
+                        <td>{{application.totalLoanAmount}}</td>
+                        <td>{{application.type}}</td>
+                        <td>{{application.term}}</td>
+                        <td>{{application.rateOfInterest}}</td>
+                        <td>
+                            <button class="btn btn-sm btn-primary m-1" (click)="approveLoanApplication(application)">Approve</button>
+                            <button class="btn btn-sm btn-danger m-1" (click)="rejectLoanApplication(application)">Reject</button>
+                        </td>
+                    </ng-container>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+
+
