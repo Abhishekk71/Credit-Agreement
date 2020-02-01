@@ -1,0 +1,61 @@
+<div>
+    <div>Welcome
+        <b *ngIf="account">{{account.name}}</b>
+        <br> You have <span id="balance">{{accountBalance}}</span> USD
+        <button class="btn btn-sm btn-danger float-right" (click)="logout()">Logout</button>
+    </div>
+</div>
+<hr>
+
+<div>
+Application Information
+</div>
+
+<table class="table table-stripped">
+    <thead>
+        <th>Name</th>
+        <th>Applicant</th>
+        <th>Total Amount Requested</th>
+        <th>Type</th>
+        <th>Term</th>
+        <th>Rate of Interest</th>
+    </thead>
+    <tbody>
+        <td>{{application.name}}</td>
+        <td>{{application.borrower.name}}</td>
+        <td>{{application.totalLoanAmount}}</td>
+        <td>{{application.type}}</td>
+        <td>{{application.term}}</td>
+        <td>{{application.rateOfInterest}}</td>
+    </tbody>
+</table>
+
+<div>
+Lend Details
+</div>
+
+<table class="table table-stripped">
+    <thead>
+        <th>Lend Time</th>
+        <th>Lender</th>
+        <th>Lend Amount</th>
+    </thead>
+    <tbody>
+      <ng-container *ngIf="application.lenderDetails">
+        <tr *ngFor="let lenderDetail of application.lenderDetails">
+          <td>{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}</td>
+          <td>{{lenderDetail.lender.name}}</td>
+          <td>{{lenderDetail.amount}}</td>
+        </tr>
+      </ng-container>
+      <ng-container *ngIf="!application.lenderDetails">
+        <tr>
+          No Details
+        </tr>
+      </ng-container>
+    </tbody>
+</table>
+
+<div class="form-group">
+  <button class="btn btn-light" (click)="back()">Back</button>
+</div>
