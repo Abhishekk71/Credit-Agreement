@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import contract from 'truffle-contract';
+import { async } from '@angular/core/testing';
 declare let require: any;
 const Web3 = require('web3');
 
@@ -45,10 +46,16 @@ export class Web3Service {
   }
 
   public async getAccounts() {
+    if(this.ready==false){
+      await this.bootstrapWeb3();
+    }
     return this.accounts;
   }
 
-  public getAccountOf(address) {
+  public async getAccountOf(address) {
+    if(this.ready==false){
+      await this.bootstrapWeb3();
+    }
     for (let account of this.accounts) {
       if (account.address == address) {
         return account;

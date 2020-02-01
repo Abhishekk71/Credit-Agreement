@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router,ActivatedRoute,Params } from '@angular/router';
 import { LocalStorageService } from './../../../../services/local-storage.service';
 import { Web3Service } from './../../../../services/web3.service';
 
@@ -22,20 +22,29 @@ export class PartLendComponent implements OnInit {
 
   USDCoin: any;
   accounts = [];
+  id=0;
  
   constructor(private router: Router, 
     private localStorageService : LocalStorageService, 
-    private web3Service: Web3Service) { }
+    private web3Service: Web3Service,
+    public activeRoute:ActivatedRoute) { }
 
-  ngOnInit() {
+  async ngOnInit() {
+
+    this.activeRoute.params.subscribe((params: Params) => {
+      const id = params['id'];
+      this.id=id;
+      console.log('id==>', id);
+    });
+
     //get application
-    let application = this.localStorageService.getApplication();
-    if (application == null) {
-      alert("Invalid application session, please choose again..");
-      this.router.navigateByUrl('/dashboard');
-      return;
+    let loanApplications = this.localStorageService.getLoanApplications();
+    for(let application of loanApplications){
+      if (application.id == this.id){
+        this.application = application;
+        break;
+      }
     }
-    this.application = application;
     
     //get user
     let userAddress = this.localStorageService.getUser();
@@ -47,7 +56,7 @@ export class PartLendComponent implements OnInit {
     this.userAddress = userAddress;
 
     // get user account
-    this.account = this.web3Service.getAccountOf(userAddress);
+    this.account = await this.web3Service.getAccountOf(userAddress);
     if (this.account == null) {
       alert("Error in fetching user account, please login again..");
       this.router.navigateByUrl('/login');
