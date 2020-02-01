@@ -5,7 +5,17 @@ import { Injectable } from '@angular/core';
 })
 export class LocalStorageService {
 
-  constructor() { }
+  constructor() {
+    if (localStorage.getItem("user") == null) {
+      localStorage.setItem("user", "");
+    }
+    if (localStorage.getItem("application") == null) {
+      localStorage.setItem("application", "{}");
+    }
+    if (localStorage.getItem("loanApplications") == null) {
+      localStorage.setItem("loanApplications", "[]");
+    }
+  }
 
   setUser(user) {
     localStorage.setItem("user", user);
@@ -33,8 +43,8 @@ export class LocalStorageService {
   updateLoanApplication(application) {
     console.log(application);
     let loanApplications = this.getLoanApplications();
-    for(let i = 0; i< loanApplications.length; i ++) {
-      if(loanApplications[i].id == application.id) {
+    for (let i = 0; i < loanApplications.length; i++) {
+      if (loanApplications[i].id == application.id) {
         loanApplications[i] = application;
       }
     }
