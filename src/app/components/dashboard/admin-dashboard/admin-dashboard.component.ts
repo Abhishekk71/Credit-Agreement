@@ -17,6 +17,7 @@ export class AdminDashboardComponent implements OnInit {
   accounts : string[];
   USDCoin: any;
   amount = 0;
+  amountToAll = 0;
   accountBalance = 0;
   receiver:"";
 
@@ -99,7 +100,31 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   async sendCoinsToAllLenders(){
-    
+
+    const amount = this.amountToAll;
+    let allAccounts = await this.web3Service.getAccounts();
+    let adminAccounts = this.localStorageService.getUser();
+    for (let receiver of allAccounts) {
+      if (receiver.type=='LENDER'){
+        console.log('Sending coins ' + amount + ' to ' + receiver.address);
+        console.log('Account User', this.localStorageService.getUser());
+        console.log('Initiating transaction... (please wait)');
+        try {
+          const deployedUSDCoin = await this.USDCoin.deployed();
+          const transaction = await deployedUSDCoin.transfer.sendTransaction(receiver.address, amount, { from: adminAccounts });
+
+          if (!transaction) {
+            console.log('Transaction failed!');
+          } else {
+            console.log('Transaction complete!');
+            this.getBalance();
+          }
+        } catch (e) {
+          console.log(e);
+          console.log('Error sending coin; see log.');
+        }
+      }
+    }
   }
 
   async getBalance() {

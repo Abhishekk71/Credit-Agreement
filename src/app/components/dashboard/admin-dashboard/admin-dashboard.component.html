@@ -11,6 +11,11 @@
     <div class="tab-pane fade show active" id="split" role="tabpanel" aria-labelledby="split-tab">
         <div class="row">
             <div class="form-group col-6">
+                <div class="send-all-group">
+                    <label for="">Coins send to all</label>
+                    <input class="form-control" type="number" name="" [(ngModel)]="amountToAll" />
+                    <button class="btn btn-primary my-2 ml-2 px-6" (click)="sendCoinsToAllLenders()">Send to all lenders</button>
+                </div>
                 <label for="">Coins to send</label>
                 <input class="form-control" type="number" name="" [(ngModel)]="amount" />
                 <label for="">Select to account</label>
@@ -20,7 +25,7 @@
                   </ng-container>
                 </select>
                 <button class="btn btn-primary my-2 px-3" (click)="sendCoin()">Send</button>
-                <button class="btn btn-primary my-2 ml-2 px-6" (click)="sendCoinsToAllLenders()">Send to all lenders</button>
+                <!-- <button class="btn btn-primary my-2 ml-2 px-6" (click)="sendCoinsToAllLenders()">Send to all lenders</button> -->
             </div>
         </div>
     </div>
