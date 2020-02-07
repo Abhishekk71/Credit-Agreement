@@ -13,9 +13,11 @@ export class LenderDashboardComponent implements OnInit {
 
   userAddress = "";
 
-  constructor(private router: Router, 
+  constructor(
+    private router: Router, 
     private localStorageService : LocalStorageService, 
-    private web3Service: Web3Service) { }
+    private web3Service: Web3Service,
+    ) { }
 
   loanApplications = [];
   lenderlist=[];
@@ -59,6 +61,7 @@ export class LenderDashboardComponent implements OnInit {
       ID: Date.now(),
       lender:await this.web3Service.getAccountOf(this.userAddress),
       amount: application.totalLoanAmount - currentAmount,
+      detailStatus:"",
     }
     application["status"] = "LendCompleted";
     application["lenderDetails"].push(lendDetail);
@@ -94,5 +97,16 @@ export class LenderDashboardComponent implements OnInit {
     this.localStorageService.setUser(this.userAddress);
     this.localStorageService.setApplication(application);
   }
+
+//   openDialog() {
+
+//     const dialogConfig = new MatDialogConfig();
+
+//     dialogConfig.disableClose = true;
+//     dialogConfig.autoFocus = true;
+
+//     this.dialog.open(ViewLendDetailsComponent, dialogConfig);
+// }
+
 
 }

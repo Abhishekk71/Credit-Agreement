@@ -66,14 +66,14 @@ contract CreditAgreement {
         }
     }
 
-    function signAsALender() public onlyLender {
+    function signAsALender() public returns(bool){
+    //function signAsALender() public oblyBorrower {
         for(uint i = 0; i < lenders.length; i++) {
             if(msg.sender == lenders[i].lender) {
                 lenders[i].hasSigned = true;
                 if(hasEveryoneSigned() == true) {
                     agreementDate = now;
                 }
-                return;
             }
         }
     }

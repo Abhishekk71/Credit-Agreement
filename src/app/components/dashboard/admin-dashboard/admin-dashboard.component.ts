@@ -23,9 +23,11 @@ export class AdminDashboardComponent implements OnInit {
 
   constructor(private localStorageService : LocalStorageService, private web3Service: Web3Service) { }
   
-  ngOnInit() {
+  async ngOnInit() {
     let userAddress = this.localStorageService.getUser();
-    this.account = this.web3Service.getAccountOf(userAddress);
+    this.account = await this.web3Service.getAccountOf(userAddress);
+    console.log("this.account: ");
+    console.log(this.account);
     this.web3Service.artifactsToContract(usd_coin_artifacts)
       .then((USDCoinAbstraction) => {
         this.USDCoin = USDCoinAbstraction;
@@ -37,16 +39,18 @@ export class AdminDashboardComponent implements OnInit {
           });
         });
       });
-    this.web3Service.getAccounts().then((accs) => {
+    await this.web3Service.getAccounts().then((accs) => {
       this.accounts = accs;
+      console.log("later this.accounts are:");
+      console.log(this.accounts);
     });
     this.refresh();
   }
   
-  refresh() {
+  async refresh() {
     let loanApplications = this.localStorageService.getLoanApplications();
     for(let loanApplication of loanApplications) {
-      let borrowerAccount = this.web3Service.getAccountOf(loanApplication.borrower);
+      let borrowerAccount =await  this.web3Service.getAccountOf(loanApplication.borrower);
       loanApplication['borrower'] = borrowerAccount;
       this.loanApplications.push(loanApplication);
     }
