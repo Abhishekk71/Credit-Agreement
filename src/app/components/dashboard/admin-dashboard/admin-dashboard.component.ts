@@ -59,7 +59,6 @@ export class AdminDashboardComponent implements OnInit {
   
   approveLoanApplication(application) {
     application["status"] = "APPROVED";
-    //ADD!! application["lenderDetails"] = [];
     application["lenderDetails"] = [];
     this.localStorageService.updateLoanApplication(application);
     this.refresh();
@@ -71,22 +70,11 @@ export class AdminDashboardComponent implements OnInit {
     this.refresh();
   }
 
-  async sendCoin() {
-    if (!this.USDCoin) {
-      alert('USDCoin is not loaded, unable to send transaction');
-      return;
-    }
-
-    const amount = this.amount;
-    const receiver = this.receiver;
-
-    console.log('Sending coins' + amount + ' to ' + receiver);
-
-    console.log('Initiating transaction... (please wait)');
-    try {
+  async sendCoinFromTo(amount:any, fromAddress:any, toAddress:any){
+    console.log('Sending coins' + amount + ' from ' + fromAddress +' to ' + toAddress);
+    try{
       const deployedUSDCoin = await this.USDCoin.deployed();
-      const transaction = await deployedUSDCoin.transfer.sendTransaction(receiver, amount, { from: this.account['address'] });
-
+      const transaction = await deployedUSDCoin.transfer.sendTransaction(toAddress, amount, { from: fromAddress });
       if (!transaction) {
         console.log('Transaction failed!');
       } else {
@@ -97,33 +85,28 @@ export class AdminDashboardComponent implements OnInit {
       console.log(e);
       console.log('Error sending coin; see log.');
     }
+
+  }
+
+  async sendCoin() {
+    if (!this.USDCoin) {
+      alert('USDCoin is not loaded, unable to send transaction');
+      return;
+    }
+    const amount = this.amount;
+    const receiver = this.receiver;
+    this.sendCoinFromTo(amount, this.account['address'], receiver);
   }
 
   async sendCoinsToAllLenders(){
 
     const amount = this.amountToAll;
     let allAccounts = await this.web3Service.getAccounts();
-    let adminAccounts = this.localStorageService.getUser();
     for (let receiver of allAccounts) {
       if (receiver.type=='LENDER'){
-        console.log('Sending coins ' + amount + ' to ' + receiver.address);
-        console.log('Account User', this.localStorageService.getUser());
-        console.log('Initiating transaction... (please wait)');
-        try {
-          const deployedUSDCoin = await this.USDCoin.deployed();
-          const transaction = await deployedUSDCoin.transfer.sendTransaction(receiver.address, amount, { from: adminAccounts });
-
-          if (!transaction) {
-            console.log('Transaction failed!');
-          } else {
-            console.log('Transaction complete!');
-            this.getBalance();
-          }
-        } catch (e) {
-          console.log(e);
-          console.log('Error sending coin; see log.');
-        }
+        this.sendCoinFromTo(amount, this.account['address'], receiver.address);
       }
+
     }
   }
 
