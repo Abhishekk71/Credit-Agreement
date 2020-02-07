@@ -5,6 +5,7 @@ import { Web3Service } from './../../../../services/web3.service';
 
 declare let require: any;
 const usd_coin_artifacts = require('./../../../../../../build/contracts/USDCoin.json');
+const credit_agreement_artifacts = require('./../../../../../../build/contracts/CreditAgreement.json');
 
 @Component({
   selector: 'app-view-lend-details',
@@ -21,8 +22,14 @@ export class ViewLendDetailsComponent implements OnInit {
   accountBalance = 0;
 
   USDCoin: any;
+  CreditAgreement: any;
   accounts = [];
   id=0;
+  lenders=[];
+  lenderShares=[];
+  sender ="";
+
+  flag=false;
 
   constructor(private router: Router, 
     private localStorageService : LocalStorageService, 
@@ -44,6 +51,27 @@ export class ViewLendDetailsComponent implements OnInit {
         break;
       }
     }
+
+    //get lenders
+    for(let detail of this.application.lenderDetails){
+      console.log("detail.lender.address is: ");
+      console.log(detail.lender.address);
+      console.log(this.lenders.indexOf(detail.lender.address));
+      if(this.lenders.indexOf(detail.lender.address!=-1)){
+        console.log("enter push");
+        this.lenders.push(detail.lender.address);
+        this.lenderShares.push(0);
+      }
+      else{
+        
+        continue;
+        //this.lenders.join(detail.lender.address);
+      }
+    }
+    console.log("lender are: ");
+    console.log(this.lenders);
+    console.log("lenderShare are: ");
+    console.log(this.lenderShares);
     
     //get user
     let userAddress = this.localStorageService.getUser();
@@ -65,6 +93,7 @@ export class ViewLendDetailsComponent implements OnInit {
       .then((USDCoinAbstraction) => {
         this.USDCoin = USDCoinAbstraction;
         this.USDCoin.deployed().then(deployed => {
+          console.log("deployed USDCoin");
           console.log(deployed);
           deployed.Transfer({}, (err, ev) => {
             console.log('Transfer event came in, refreshing balance');
@@ -72,9 +101,36 @@ export class ViewLendDetailsComponent implements OnInit {
           });
         });
       });
-    this.web3Service.getAccounts().then((accs) => {
+    await this.web3Service.getAccounts().then((accs) => {
       this.accounts = accs;
+      console.log("this.accounts is: ");
+      console.log(this.accounts);
+      this.sender=this.accounts[0];
     });
+
+    console.log("this.accounts[0] is: ");
+    console.log(this.sender["address"]);
+    
+
+    this.web3Service.artifactsToContract(credit_agreement_artifacts)
+      .then((CreditAgreementAbstraction) => {
+        this.CreditAgreement = CreditAgreementAbstraction;
+        console.log("before deployed");
+        this.CreditAgreement.new(this.sender["address"],this.lenders,this.lenderShares,this.application.totalLoanAmount,1581035048, {from: this.accounts[0]["address"]}).then(deployed => {
+          console.log("deployed CreditAgreement");
+          console.log(deployed);
+          this.test();
+          // deployed.Transfer({}, (err, ev) => {
+          //   console.log('try test');
+          //   this.test();
+          // });
+        });
+      });
+
+    console.log("now check");
+    console.log("before flag is: ", this.flag);
+    this.canSign();
+    console.log("flag is: ",this.flag);
   }
 
   logout() {
@@ -82,11 +138,30 @@ export class ViewLendDetailsComponent implements OnInit {
     this.router.navigateByUrl("/login");
   }
 
+  async test(){
+    console.log("enter test");
+    try {
+      const deployedCreditAgreement = await this.CreditAgreement.new(this.sender["address"],this.lenders,this.lenderShares,this.application.totalLoanAmount,1581035048, {from: this.accounts[0]["address"]});
+      console.log("deployedCreditAgreement is:");
+      console.log(deployedCreditAgreement);
+      const result = await deployedCreditAgreement.signAsALender.call();
+      console.log("first result is: ");
+      console.log(result);
+      const check = await deployedCreditAgreement.hasEveryoneSigned;
+      console.log("second result is: ");
+      console.log(check);
+    } catch (e) {
+      console.log(e);
+      console.log('Error getting balance; see log.');
+    }
+  }
+
   async getBalance() {
     console.log('Refreshing balance');
 
     try {
       const deployedUSDCoin = await this.USDCoin.deployed();
+      console.log("deployedUSDCoin is: ");
       console.log(deployedUSDCoin);
       console.log('Account', this.account);
       const usdCoinBalance = await deployedUSDCoin.balanceOf.call(this.account['address']);
@@ -100,6 +175,50 @@ export class ViewLendDetailsComponent implements OnInit {
 
   back(){
     this.router.navigateByUrl("dashboard");
+  }
+
+  canSign(){
+    let details = this.application.lenderDetails;
+    // console.log("this.account is:");
+    // console.log(this.account);
+    for (let detail of details){
+      // console.log("detail.lender is:");
+      // console.log(detail.lender);
+      if (detail.lender=this.account){
+        // console.log("the same");
+        this.flag=true;
+        return;
+      }
+    }
+  }
+
+  async sign(){
+    try {
+      console.log("enter sign");
+      const deployedUSDCoin = await this.USDCoin.deployed();
+      
+      await deployedUSDCoin.signAsALender;
+      const check = await deployedUSDCoin.hasEveryoneSigned;
+      console.log("result is: ");
+      console.log(check);
+      
+    } catch (e) {
+      console.log(e);
+      console.log('Error getting balance; see log.');
+    }
+
+
+    // let details = this.application.lenderDetails;
+    // // for(let detail of details){
+    // //   if(detail.lender=this.account )
+    // // }
+    // for (let detail of details){
+    //   if(detail.lender=this.account && detail.detailStatus!="signed"){
+    //     detail.detailStatus= "signed";
+    //   }
+    // }
+    alert("all of your lender details are signed successfully!");
+    // this.localStorageService.updateLoanApplication(this.application);
   }
 
 }

@@ -7,6 +7,7 @@
 </div>
 <hr>
 
+
 <div>
 Application Information
 </div>
@@ -39,6 +40,7 @@ Lend Details
         <th>Lend Time</th>
         <th>Lender</th>
         <th>Lend Amount</th>
+        <th>Stauts</th>
     </thead>
     <tbody>
       <ng-container *ngIf="application.lenderDetails">
@@ -46,6 +48,7 @@ Lend Details
           <td>{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}</td>
           <td>{{lenderDetail.lender.name}}</td>
           <td>{{lenderDetail.amount}}</td>
+          <td *ngIf="lenderDetail.detailStatus=='signed'">Signed</td>
         </tr>
       </ng-container>
       <ng-container *ngIf="!application.lenderDetails">
@@ -58,4 +61,5 @@ Lend Details
 
 <div class="form-group">
   <button class="btn btn-light" (click)="back()">Back</button>
+  <button *ngIf="flag" class="btn btn-light" (click)="sign()">Sign</button>
 </div>

@@ -30,11 +30,11 @@ export class BorrowerDashboardComponent implements OnInit {
     this.userAddress = userAddress;
   }
 
-  submit() {
+  async submit() {
     let loanApplication = {
       id: Date.now(),
       name: this.name,
-      borrower: this.userAddress,
+      borrower: await this.userAddress,
       totalLoanAmount: this.totalLoanAmount,
       type: this.type,
       term: this.term,

@@ -99,7 +99,7 @@ export class PartLendComponent implements OnInit {
     }
   }
 
-  submit() {
+  async submit() {
     //first check if the new total lend amount will larger than the total loan amount
     if(this.calculateAmount()>this.application.totalLoanAmount){
       alert("the amout is larger than the total amount of this application.");
@@ -109,9 +109,11 @@ export class PartLendComponent implements OnInit {
     //create lend detail record
     let lendDetail = {
       ID: Date.now(),
-      lender:this.web3Service.getAccountOf(this.userAddress),
+      lender:await this.web3Service.getAccountOf(this.userAddress),
       amount: this.lendAmount,
+      detailStatus:"",
     }
+    
     this.application["lenderDetails"].push(lendDetail);
     this.localStorageService.updateLoanApplication(this.application);
 

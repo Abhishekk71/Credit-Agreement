@@ -25,6 +25,7 @@
                     <button class="btn btn-sm btn-primary m-1" (click)="lendAllLoanApplication(application)">Lend All</button>
                     <button class="btn btn-sm btn-danger m-1" (click)="lendPartLoanApplication(application)" [routerLink]="['/lend', application.id]">Lend Part of Application</button>
                     <button class="btn btn-light m-1" (click)="view(application)" [routerLink]="['/view', application.id]">View Lend Details</button>
+                    <!--<button class="btn btn-sm btn-primary m-1" (click)="open()">Test</button>-->
                 </td>
             </ng-container>
         </tr>
