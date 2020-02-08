@@ -24,7 +24,7 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private localStorageService: LocalStorageService,
     private web3Service: Web3Service
-  ) { }
+  ) { console.log("enter dashboard");}
 
   async ngOnInit() {
     console.log("refresh!");

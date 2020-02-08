@@ -111,7 +111,7 @@ export class AdminDashboardComponent implements OnInit {
         console.log('Initiating transaction... (please wait)');
         try {
           const deployedUSDCoin = await this.USDCoin.deployed();
-          const transaction = await deployedUSDCoin.transfer.sendTransaction(receiver.address, amount, { from: adminAccounts });
+          const transaction = await deployedUSDCoin.transfer.sendTransaction(receiver.address, amount, { from: this.account['address'] });
 
           if (!transaction) {
             console.log('Transaction failed!');

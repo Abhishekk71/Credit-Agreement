@@ -116,7 +116,7 @@ export class ViewLendDetailsComponent implements OnInit {
       .then((CreditAgreementAbstraction) => {
         this.CreditAgreement = CreditAgreementAbstraction;
         console.log("before deployed");
-        this.CreditAgreement.new(this.sender["address"],this.lenders,this.lenderShares,this.application.totalLoanAmount,1581035048, {from: this.accounts[0]["address"]}).then(deployed => {
+        this.CreditAgreement.new(this.application.borrower["address"],this.lenders,this.lenderShares,this.application.totalLoanAmount,1581035048, {from: this.account["address"]}).then(deployed => {
           console.log("deployed CreditAgreement");
           console.log(deployed);
           this.test();
@@ -140,10 +140,24 @@ export class ViewLendDetailsComponent implements OnInit {
 
   async test(){
     console.log("enter test");
+    console.log(this.application.borrower["address"]);
+    console.log("this.lenders:");
+    console.log(this.lenders);
+    console.log("sender is: ");
+    console.log(this.account["address"]);
     try {
-      const deployedCreditAgreement = await this.CreditAgreement.new(this.sender["address"],this.lenders,this.lenderShares,this.application.totalLoanAmount,1581035048, {from: this.accounts[0]["address"]});
+      const deployedCreditAgreement = await this.CreditAgreement.new(this.application.borrower["address"],this.lenders,this.lenderShares,this.application.totalLoanAmount,1581035048);
       console.log("deployedCreditAgreement is:");
       console.log(deployedCreditAgreement);
+      const test = await deployedCreditAgreement.getLenders.call();
+      console.log("test get lenders:");
+      console.log(test);
+      const sender = await deployedCreditAgreement.getSender.call();
+      console.log("sender is: ", sender);
+      console.log("this.account: ",this.accounts);
+      const onlyLender = await deployedCreditAgreement.check({from: this.account["address"]});
+      console.log("onlyLender is: ");
+      console.log(onlyLender);
       const result = await deployedCreditAgreement.signAsALender.call();
       console.log("first result is: ");
       console.log(result);
