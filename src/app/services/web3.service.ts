@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
-import contract from 'truffle-contract';
 import { async } from '@angular/core/testing';
+import contract from 'truffle-contract';
 declare let require: any;
 const Web3 = require('web3');
 
@@ -19,6 +19,10 @@ export class Web3Service {
     window.addEventListener('load', (event) => {
       this.bootstrapWeb3();
     });
+  }
+
+  public getWeb3() {
+    return this.web3;
   }
 
   public async bootstrapWeb3() {
@@ -46,14 +50,14 @@ export class Web3Service {
   }
 
   public async getAccounts() {
-    if(this.ready==false){
+    if (this.ready == false) {
       await this.bootstrapWeb3();
     }
     return this.accounts;
   }
 
   public async getAccountOf(address) {
-    if(this.ready==false){
+    if (this.ready == false) {
       await this.bootstrapWeb3();
     }
     for (let account of this.accounts) {
