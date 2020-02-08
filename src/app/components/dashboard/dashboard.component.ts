@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-
+import { SharedService } from '../../services/shared.service';
 import { LocalStorageService } from './../../services/local-storage.service';
 import { Router } from '@angular/router';
 import { Web3Service } from './../../services/web3.service';
@@ -13,6 +13,8 @@ const usd_coin_artifacts = require('./../../../../build/contracts/USDCoin.json')
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
+  
+
 
   account = {};
   accountBalance = 0;
@@ -23,8 +25,16 @@ export class DashboardComponent implements OnInit {
   constructor(
     private router: Router,
     private localStorageService: LocalStorageService,
-    private web3Service: Web3Service
-  ) { }
+    private web3Service: Web3Service,
+    private sharedBalance: SharedService
+  ) {    
+    this.sharedBalance.balanceData.subscribe(
+      (data:any) => {
+        console.log("subscribed data: ",data);
+        this.accountBalance=data;
+      }
+    )
+   }
 
   async ngOnInit() {
     console.log("refresh!");
@@ -49,6 +59,8 @@ export class DashboardComponent implements OnInit {
           deployed.Transfer({}, (err, ev) => {
             console.log('Transfer event came in, refreshing balance');
             this.getBalance();
+            console.log("account balance: ",this.accountBalance);
+            console.log("shared balance: ",this.sharedBalance.balanceData);
           });
         });
       });
@@ -71,6 +83,7 @@ export class DashboardComponent implements OnInit {
       console.log('Account', this.account);
       const usdCoinBalance = await deployedUSDCoin.balanceOf.call(this.account['address']);
       console.log('Found balance: ' + usdCoinBalance);
+      // this.sharedBalance.balanceData.emit(usdCoinBalance);
       this.accountBalance = usdCoinBalance;
     } catch (e) {
       console.log(e);

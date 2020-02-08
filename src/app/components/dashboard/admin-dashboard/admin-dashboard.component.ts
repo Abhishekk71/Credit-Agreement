@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalStorageService } from './../../../services/local-storage.service';
 import { Web3Service } from './../../../services/web3.service';
+import { SharedService } from './../../../services/shared.service';
 
 declare let require: any;
 const usd_coin_artifacts = require('./../../../../../build/contracts/USDCoin.json');
@@ -22,7 +23,11 @@ export class AdminDashboardComponent implements OnInit {
   receiver:"";
 
 
-  constructor(private localStorageService : LocalStorageService, private web3Service: Web3Service) { }
+  constructor(private localStorageService : LocalStorageService,
+     private web3Service: Web3Service,
+     private sharedBalance: SharedService ) {    
+       this.sharedBalance.balanceData.emit(this.accountBalance); 
+     }
   
   async ngOnInit() {
     let userAddress = this.localStorageService.getUser();
@@ -45,6 +50,7 @@ export class AdminDashboardComponent implements OnInit {
       console.log("later this.accounts are:");
       console.log(this.accounts);
     });
+    this.sharedBalance.balanceData.emit(this.accountBalance); 
     this.refresh();
   }
   
@@ -120,6 +126,7 @@ export class AdminDashboardComponent implements OnInit {
       const usdCoinBalance = await deployedUSDCoin.balanceOf.call(this.account['address']);
       console.log('Found balance: ' + usdCoinBalance);
       this.accountBalance = usdCoinBalance;
+      this.sharedBalance.balanceData.emit(this.accountBalance); 
     } catch (e) {
       console.log(e);
       console.log('Error getting balance; see log.');
