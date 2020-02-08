@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { LocalStorageService } from './../../../services/local-storage.service';
 import { Web3Service } from './../../../services/web3.service';
+import { SharedService } from './../../../services/shared.service';
 
 declare let require: any;
 const usd_coin_artifacts = require('./../../../../../build/contracts/USDCoin.json');
@@ -22,7 +23,11 @@ export class AdminDashboardComponent implements OnInit {
   receiver:"";
 
 
-  constructor(private localStorageService : LocalStorageService, private web3Service: Web3Service) { }
+  constructor(private localStorageService : LocalStorageService,
+     private web3Service: Web3Service,
+     private sharedBalance: SharedService ) {    
+       this.sharedBalance.balanceData.emit(this.accountBalance); 
+     }
   
   async ngOnInit() {
     let userAddress = this.localStorageService.getUser();
@@ -45,6 +50,7 @@ export class AdminDashboardComponent implements OnInit {
       console.log("later this.accounts are:");
       console.log(this.accounts);
     });
+    this.sharedBalance.balanceData.emit(this.accountBalance); 
     this.refresh();
   }
   
@@ -59,7 +65,6 @@ export class AdminDashboardComponent implements OnInit {
   
   approveLoanApplication(application) {
     application["status"] = "APPROVED";
-    //ADD!! application["lenderDetails"] = [];
     application["lenderDetails"] = [];
     this.localStorageService.updateLoanApplication(application);
     this.refresh();
@@ -71,22 +76,11 @@ export class AdminDashboardComponent implements OnInit {
     this.refresh();
   }
 
-  async sendCoin() {
-    if (!this.USDCoin) {
-      alert('USDCoin is not loaded, unable to send transaction');
-      return;
-    }
-
-    const amount = this.amount;
-    const receiver = this.receiver;
-
-    console.log('Sending coins' + amount + ' to ' + receiver);
-
-    console.log('Initiating transaction... (please wait)');
-    try {
+  async sendCoinFromTo(amount:any, fromAddress:any, toAddress:any){
+    console.log('Sending coins' + amount + ' from ' + fromAddress +' to ' + toAddress);
+    try{
       const deployedUSDCoin = await this.USDCoin.deployed();
-      const transaction = await deployedUSDCoin.transfer.sendTransaction(receiver, amount, { from: this.account['address'] });
-
+      const transaction = await deployedUSDCoin.transfer.sendTransaction(toAddress, amount, { from: fromAddress });
       if (!transaction) {
         console.log('Transaction failed!');
       } else {
@@ -97,33 +91,28 @@ export class AdminDashboardComponent implements OnInit {
       console.log(e);
       console.log('Error sending coin; see log.');
     }
+
+  }
+
+  async sendCoin() {
+    if (!this.USDCoin) {
+      alert('USDCoin is not loaded, unable to send transaction');
+      return;
+    }
+    const amount = this.amount;
+    const receiver = this.receiver;
+    this.sendCoinFromTo(amount, this.account['address'], receiver);
   }
 
   async sendCoinsToAllLenders(){
 
     const amount = this.amountToAll;
     let allAccounts = await this.web3Service.getAccounts();
-    let adminAccounts = this.localStorageService.getUser();
     for (let receiver of allAccounts) {
       if (receiver.type=='LENDER'){
-        console.log('Sending coins ' + amount + ' to ' + receiver.address);
-        console.log('Account User', this.localStorageService.getUser());
-        console.log('Initiating transaction... (please wait)');
-        try {
-          const deployedUSDCoin = await this.USDCoin.deployed();
-          const transaction = await deployedUSDCoin.transfer.sendTransaction(receiver.address, amount, { from: this.account['address'] });
-
-          if (!transaction) {
-            console.log('Transaction failed!');
-          } else {
-            console.log('Transaction complete!');
-            this.getBalance();
-          }
-        } catch (e) {
-          console.log(e);
-          console.log('Error sending coin; see log.');
-        }
+        this.sendCoinFromTo(amount, this.account['address'], receiver.address);
       }
+
     }
   }
 
@@ -137,6 +126,7 @@ export class AdminDashboardComponent implements OnInit {
       const usdCoinBalance = await deployedUSDCoin.balanceOf.call(this.account['address']);
       console.log('Found balance: ' + usdCoinBalance);
       this.accountBalance = usdCoinBalance;
+      this.sharedBalance.balanceData.emit(this.accountBalance); 
     } catch (e) {
       console.log(e);
       console.log('Error getting balance; see log.');
