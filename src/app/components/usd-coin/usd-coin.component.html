@@ -1,0 +1,32 @@
+<div>
+    <div>Welcome
+        <b *ngIf="account">{{account.name}}</b>
+        <br> You have <span id="balance">{{accountBalance}}</span> USD
+        <button class="btn btn-sm btn-danger float-right" (click)="logout()">Logout</button>
+    </div>
+</div>
+<hr>
+
+<b>All accounts</b>
+<ul class="small">
+    <li *ngFor="let account of accounts">
+        <b>{{account.name}} - [{{account.type}}]</b>
+        <pre>{{account.address}}</pre>
+    </li>
+</ul>
+<hr>
+
+<div class="row">
+    <div class="form-group col-6">
+        <label for="">Coins to send</label>
+        <input class="form-control" type="number" name="" [(ngModel)]="amount" />
+        <label for="">Select to account</label>
+        <select class="form-control" [(ngModel)]="receiver">
+          <ng-container *ngIf="accounts">
+            <option *ngFor="let account of accounts" [value]="account.address">{{account.name}} - [{{account.type}}]</option>
+          </ng-container>
+        </select>
+        <button class="btn btn-primary my-2 px-3" (click)="sendCoin()">Send</button>
+        <button class="btn btn-primary my-2 ml-2 px-3" (click)="sendCoinsToAll()">Send to all</button>
+    </div>
+</div>
