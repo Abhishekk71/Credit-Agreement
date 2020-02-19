@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router,ActivatedRoute,Params } from '@angular/router';
 import { LocalStorageService } from './../../../../services/local-storage.service';
 import { Web3Service } from './../../../../services/web3.service';
+import { ContractService } from './../../../../services/contract.service';
 
 declare let require: any;
 const usd_coin_artifacts = require('./../../../../../../build/contracts/USDCoin.json');
@@ -34,6 +35,7 @@ export class ViewLendDetailsComponent implements OnInit {
   constructor(private router: Router, 
     private localStorageService : LocalStorageService, 
     private web3Service: Web3Service,
+    private contractService: ContractService,
     public activeRoute:ActivatedRoute) { }
 
   async ngOnInit() {
@@ -99,6 +101,7 @@ export class ViewLendDetailsComponent implements OnInit {
             console.log('Transfer event came in, refreshing balance');
             this.getBalance();
           });
+
         });
       });
     await this.web3Service.getAccounts().then((accs) => {
@@ -144,7 +147,9 @@ export class ViewLendDetailsComponent implements OnInit {
       const deployedCreditAgreement = await this.CreditAgreement.new(this.sender["address"],this.lenders,this.lenderShares,this.application.totalLoanAmount,1581035048, {from: this.accounts[0]["address"]});
       console.log("deployedCreditAgreement is:");
       console.log(deployedCreditAgreement);
-      const result = await deployedCreditAgreement.signAsALender.call();
+      const deployedTestContract = await this.contractService.getDeployedContract('CreditAgreement',deployedCreditAgreement.address);
+      console.log("contract got: ",deployedTestContract);
+      const result = await deployedCreditAgreement.signAsALender.signAsALender({from: this.userAddress});
       console.log("first result is: ");
       console.log(result);
       const check = await deployedCreditAgreement.hasEveryoneSigned;

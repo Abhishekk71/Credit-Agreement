@@ -52,4 +52,8 @@ export class BorrowerDashboardComponent implements OnInit {
     this.rateOfInterest = 0;
   }
 
+  // repayment(){
+  //   this.router.navigateByUrl("repayment-dashboard");
+  // }
+
 }

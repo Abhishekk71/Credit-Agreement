@@ -26,7 +26,7 @@ contract CreditAgreement {
     constructor(address _borrower, address[] memory _lenders, uint[] memory _lenderShares, uint _amount, uint _closingDate ) public {
         owner = msg.sender;
         borrower = _borrower;
-        for(uint i = 0; i < lenders.length; i++) {
+        for(uint i = 0; i < _lenders.length; i++) {
             lenders.push(Lender({lender: _lenders[i], share: _lenderShares[i], hasSigned: false}));
         }
         amount = _amount;

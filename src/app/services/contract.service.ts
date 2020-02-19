@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Web3Service } from './web3.service';
-const contract = require('truffle-contract');
+import contract from 'truffle-contract';
 
 @Injectable({
   providedIn: 'root'
