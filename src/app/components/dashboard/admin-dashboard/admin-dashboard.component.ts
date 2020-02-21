@@ -105,7 +105,6 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   async sendCoinsToAllLenders(){
-
     const amount = this.amountToAll;
     let allAccounts = await this.web3Service.getAccounts();
     for (let receiver of allAccounts) {
