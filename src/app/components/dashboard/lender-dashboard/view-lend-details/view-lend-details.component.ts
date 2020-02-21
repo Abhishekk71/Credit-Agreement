@@ -35,8 +35,8 @@ export class ViewLendDetailsComponent implements OnInit {
   constructor(private router: Router, 
     private localStorageService : LocalStorageService, 
     private web3Service: Web3Service,
-    public activeRoute: ActivatedRoute,
-    private contractService: ContractService) { }
+    private contractService: ContractService,
+    public activeRoute:ActivatedRoute) { }
 
   async ngOnInit() {
     this.activeRoute.params.subscribe((params: Params) => {
@@ -80,6 +80,7 @@ export class ViewLendDetailsComponent implements OnInit {
             console.log('Transfer event came in, refreshing balance');
             this.getBalance();
           });
+
         });
       });
     await this.web3Service.getAccounts().then((accs) => {
@@ -92,7 +93,6 @@ export class ViewLendDetailsComponent implements OnInit {
     this.localStorageService.setUser("");
     this.router.navigateByUrl("/login");
   }
-
 
   async getBalance() {
     console.log('Refreshing balance');

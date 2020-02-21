@@ -21,6 +21,7 @@ import { LenderContractsComponent } from './components/dashboard/lender-dashboar
 import { ViewLendDetailsComponent } from './components/dashboard/lender-dashboard/view-lend-details/view-lend-details.component';
 import { RepaymentComponent } from './components/dashboard/lender-dashboard/repayment/repayment.component';
 import { CashComponent } from './components/dashboard/lender-dashboard/cash/cash.component';
+import { RepaymentDashboardComponent } from './components/dashboard/borrower-dashboard/repayment-dashboard/repayment-dashboard.component';
 
 const routes = [
   { path: "home", component: LoginComponent }, 
@@ -28,9 +29,9 @@ const routes = [
   { path: "lend/:id", component: LenderContractsComponent},
   { path: "view/:id", component: ViewLendDetailsComponent},
   { path: "lenderrepayment/:id", component: RepaymentComponent},
+  { path: "borrower-repayment", component: RepaymentDashboardComponent},
   { path: "usdcoin", component: USDCoinComponent }, 
   { path: '**', component: LoginComponent },
-  
 ];
 
 @NgModule({
@@ -43,9 +44,11 @@ const routes = [
     BorrowerDashboardComponent,
     LenderDashboardComponent,
     LenderContractsComponent,
-    ViewLendDetailsComponent,
     RepaymentComponent,
     CashComponent
+    PartLendComponent,
+    ViewLendDetailsComponent,
+    RepaymentDashboardComponent
   ],
   imports: [
     BrowserAnimationsModule,
