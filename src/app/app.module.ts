@@ -27,6 +27,7 @@ const routes = [
   { path: "lend/:id", component: PartLendComponent},
   { path: "view/:id", component: ViewLendDetailsComponent},
   { path: "borrower-repayment", component: RepaymentDashboardComponent},
+  { path: "borrower", component: BorrowerDashboardComponent},
   { path: "usdcoin", component: USDCoinComponent }, 
   { path: '**', component: LoginComponent },
 ];
