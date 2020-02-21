@@ -35,7 +35,7 @@ Application Information
 Lend Details
 </div>
 
-<table class="table table-stripped">
+<table *ngIf="application.lenderDetails.length!=0" class="table table-stripped">
     <thead>
         <th>Lend Time</th>
         <th>Lender</th>
@@ -43,7 +43,7 @@ Lend Details
         <th>Stauts</th>
     </thead>
     <tbody>
-      <ng-container *ngIf="application.lenderDetails">
+      <ng-container >
         <tr *ngFor="let lenderDetail of application.lenderDetails">
           <td>{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}</td>
           <td>{{lenderDetail.lender.name}}</td>
@@ -51,15 +51,29 @@ Lend Details
           <td *ngIf="lenderDetail.detailStatus=='signed'">Signed</td>
         </tr>
       </ng-container>
-      <ng-container *ngIf="!application.lenderDetails">
-        <tr>
-          No Details
-        </tr>
-      </ng-container>
+      
     </tbody>
 </table>
+<table *ngIf="application.lenderDetails.length==0">
+  <tr>
+    No Details
+  </tr>
+</table>
+
+<hr>
+
+<div class="form-group" *ngIf="application.coveredAmount!=application.totalLoanAmount">
+
+  <label for="">Lend Amount</label>
+  <input type="number" class="form-control" id="" [(ngModel)]="lendAmount" />
+
+  <button class="btn btn-primary" (click)="submit()">Submit</button>
+  <button class="btn btn-success" (click)="lendAllLoanApplication(application)">Lend All Amount</button>
+  
+</div>
 
 <div class="form-group">
+  <button class="btn btn-light" *ngIf="canSign()" (click)="deploy()">deploy</button>
+  <button class="btn btn-light" *ngIf="canSign()" (click)="sign()">Sign</button>
   <button class="btn btn-light" (click)="back()">Back</button>
-  <button *ngIf="flag" class="btn btn-light" (click)="sign()">Sign</button>
 </div>

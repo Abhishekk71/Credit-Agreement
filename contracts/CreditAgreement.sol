@@ -1,4 +1,5 @@
 pragma solidity ^0.5.0;
+//pragma experimental ABIEncoderV2;
 
 import "./Facility.sol";
 
@@ -15,7 +16,7 @@ contract CreditAgreement {
         bool hasSigned;
     }
     Lender[] lenders;
-
+    
     uint amount;
 
     uint agreementDate;
@@ -66,16 +67,27 @@ contract CreditAgreement {
         }
     }
 
-    function signAsALender() public returns(bool){
-    //function signAsALender() public oblyBorrower {
+    //function signAsALender() public returns(bool){
+    function signAsALender() public onlyLender returns(bool) {
         for(uint i = 0; i < lenders.length; i++) {
             if(msg.sender == lenders[i].lender) {
                 lenders[i].hasSigned = true;
                 if(hasEveryoneSigned() == true) {
                     agreementDate = now;
+                    return true;
                 }
             }
         }
+        return false;
+    }
+
+    function check() public view returns(bool) {
+        for(uint i = 0; i < lenders.length; i++) {
+            if(msg.sender == lenders[i].lender) {
+                return lenders[i].hasSigned;
+            }
+        }
+        return false;
     }
 
     function hasEveryoneSigned() public view returns(bool) {

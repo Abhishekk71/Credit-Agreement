@@ -1,0 +1,101 @@
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="revolver-tab" data-toggle="tab" href="#revolver" role="tab" aria-controls="revolver" aria-selected="true">Revolver</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="termloan-tab" data-toggle="tab" href="#termloan" role="tab" aria-controls="termloan" aria-selected="false">Term Loan</a>
+    </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+  <div class="tab-pane fade show active" id="revolver" role="tabpanel" aria-labelledby="revolver-tab">
+    <table class="table table-stripped">
+        <thead>
+            <th>Name</th>
+            <th>Borrwer</th>
+            <th>Lend Amount</th>
+            <th>Total Amount</th>
+            <th>Term</th>
+            <th>Rate of Interest</th>
+            <th>All Lenders</th>
+            <th>Starting Date</th>
+            <th>Ending Date</th>
+            <th>Maturity Date (every month)</th>
+            <th>Expiration Date (every month)</th>
+            <th>Limitation</th>
+            <th>Amount need to pay by Borrwer</th>
+            <th>Actions</th>
+        </thead>
+        <tbody>
+          <ng-container *ngFor="let application of applications">
+              <tr *ngIf="application.type=='REVOLVER'">
+                <td>{{application.name}}</td>
+                <td>{{application.borrower.name}}</td>
+                <td>sum(application)</td>
+                <td>{{application.totalLoanAmount}}</td>
+                <td>{{application.term}}</td>
+                <td>{{application.rateOfInterest}}</td>
+                <th >
+                  <li *ngFor="let lenderDetail of application.lenderDetails">{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}   {{lenderDetail.lender.name}}</li>
+                </th>
+                <td>starting date</td>
+                <td>ending date</td>
+                <td>Maturity date</td>
+                <td>expiration date</td>
+                <td>limitaion</td>
+                <td>amount</td>
+                <td>
+                  <button class="btn btn-sm btn-primary m-1" [routerLink]="['/lenderrepayment', application.id]">Repayment History</button>
+                </td>
+              </tr>
+          </ng-container>    
+        </tbody>
+    </table>
+  </div>
+
+  <div class="tab-pane fade" id="termloan" role="tabpanel" aria-labelledby="termloan-tab">
+    <table class="table table-stripped">
+          <thead>
+              <th>Name</th>
+              <th>Borrwer</th>
+              <th>Lend Amount</th>
+              <th>Total Amount</th>
+              <th>Term</th>
+              <th>Rate of Interest</th>
+              <th>All Lenders</th>
+              <th>Starting Date</th>
+              <th>Expiration Date</th>
+              <th>Maturity Date</th>
+              <th>Usage</th>
+              <th>Repayment Schedule Type</th>
+              <th>Amount to pay (every term)</th>
+              <th>Actions</th>
+          </thead>
+          <tbody>
+            <ng-container *ngFor="let application of applications">
+              <tr *ngIf="application.type=='TERM_LOAN'">
+                <td>{{application.name}}</td>
+                <td>{{application.borrower.name}}</td>
+                <td>sum(application)</td>
+                <td>{{application.totalLoanAmount}}</td>
+                <td>{{application.term}}</td>
+                <td>{{application.rateOfInterest}}</td>
+                <th>
+                  <li *ngFor="let lenderDetail of application.lenderDetails">{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}   {{lenderDetail.lender.name}}</li>
+                </th>
+                <td>starting date</td>
+                <td>expiration date</td>
+                <td>maturity date</td>
+                <td>expiration date</td>
+                <td>type</td>
+                <td>amount</td>
+                <td>
+                  <button class="btn btn-sm btn-primary m-1" [routerLink]="['/lenderrepayment', application.id]">Repayment History</button>
+                </td>
+              </tr>
+            </ng-container>
+          </tbody>
+      </table>
+  </div>
+</div>
+  
