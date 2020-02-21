@@ -45,8 +45,7 @@ const routes = [
     LenderDashboardComponent,
     LenderContractsComponent,
     RepaymentComponent,
-    CashComponent
-    PartLendComponent,
+    CashComponent,
     ViewLendDetailsComponent,
     RepaymentDashboardComponent
   ],
