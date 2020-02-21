@@ -16,6 +16,7 @@ export class BorrowerDashboardComponent implements OnInit {
   type = "REVOLVER";
   term = 0;
   rateOfInterest = 0;
+  loanApplications=[];
 
   constructor(private router: Router,
     private localStorageService: LocalStorageService, ) { }
@@ -28,6 +29,13 @@ export class BorrowerDashboardComponent implements OnInit {
       return;
     }
     this.userAddress = userAddress;
+
+    let loanApplications = this.localStorageService.getLoanApplications();
+    for(let application of loanApplications){
+      if( application.borrower.address == this.userAddress){
+        this.loanApplications.push(application);
+      }
+    }
   }
 
   async submit() {

@@ -66,6 +66,7 @@ export class AdminDashboardComponent implements OnInit {
   approveLoanApplication(application) {
     application["status"] = "APPROVED";
     application["lenderDetails"] = [];
+    application["coveredAmount"] = 0;
     this.localStorageService.updateLoanApplication(application);
     this.refresh();
   }

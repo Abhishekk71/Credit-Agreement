@@ -13,9 +13,6 @@ const usd_coin_artifacts = require('./../../../../build/contracts/USDCoin.json')
   styleUrls: ['./dashboard.component.css']
 })
 export class DashboardComponent implements OnInit {
-  
-
-
   account = {};
   accountBalance = 0;
 
@@ -44,6 +41,7 @@ export class DashboardComponent implements OnInit {
       this.router.navigateByUrl('/login');
       return;
     }
+    
     // get user account
     this.account = await this.web3Service.getAccountOf(userAddress);
     if (this.account == null) {

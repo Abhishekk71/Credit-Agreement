@@ -17,14 +17,17 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AdminDashboardComponent } from './components/dashboard/admin-dashboard/admin-dashboard.component';
 import { BorrowerDashboardComponent } from './components/dashboard/borrower-dashboard/borrower-dashboard.component';
 import { LenderDashboardComponent } from './components/dashboard/lender-dashboard/lender-dashboard.component';
-import { PartLendComponent } from './components/dashboard/lender-dashboard/part-lend/part-lend.component';
+import { LenderContractsComponent } from './components/dashboard/lender-dashboard/lender-contracts/lender-contracts.component';
 import { ViewLendDetailsComponent } from './components/dashboard/lender-dashboard/view-lend-details/view-lend-details.component';
+import { RepaymentComponent } from './components/dashboard/lender-dashboard/repayment/repayment.component';
+import { CashComponent } from './components/dashboard/lender-dashboard/cash/cash.component';
 
 const routes = [
   { path: "home", component: LoginComponent }, 
   { path: "dashboard", component: DashboardComponent }, 
-  { path: "lend/:id", component: PartLendComponent},
+  { path: "lend/:id", component: LenderContractsComponent},
   { path: "view/:id", component: ViewLendDetailsComponent},
+  { path: "lenderrepayment/:id", component: RepaymentComponent},
   { path: "usdcoin", component: USDCoinComponent }, 
   { path: '**', component: LoginComponent },
   
@@ -39,8 +42,10 @@ const routes = [
     AdminDashboardComponent,
     BorrowerDashboardComponent,
     LenderDashboardComponent,
-    PartLendComponent,
-    ViewLendDetailsComponent
+    LenderContractsComponent,
+    ViewLendDetailsComponent,
+    RepaymentComponent,
+    CashComponent
   ],
   imports: [
     BrowserAnimationsModule,
