@@ -6,7 +6,6 @@ import { ContractService } from './../../../../services/contract.service';
 
 declare let require: any;
 const usd_coin_artifacts = require('./../../../../../../build/contracts/USDCoin.json');
-const credit_agreement_artifacts = require('./../../../../../../build/contracts/CreditAgreement.json');
 
 @Component({
   selector: 'app-view-lend-details',
@@ -29,6 +28,7 @@ export class ViewLendDetailsComponent implements OnInit {
   lenders=[];
   lenderShares=[];
   sender ="";
+  buttonName="";
 
   flag=false;
 
@@ -54,27 +54,6 @@ export class ViewLendDetailsComponent implements OnInit {
       }
     }
 
-    //get lenders
-    for(let detail of this.application.lenderDetails){
-      console.log("detail.lender.address is: ");
-      console.log(detail.lender.address);
-      console.log(this.lenders.indexOf(detail.lender.address));
-      if(this.lenders.indexOf(detail.lender.address!=-1)){
-        console.log("enter push");
-        this.lenders.push(detail.lender.address);
-        this.lenderShares.push(0);
-      }
-      else{
-        
-        continue;
-        //this.lenders.join(detail.lender.address);
-      }
-    }
-    console.log("lender are: ");
-    console.log(this.lenders);
-    console.log("lenderShare are: ");
-    console.log(this.lenderShares);
-    
     //get user
     let userAddress = this.localStorageService.getUser();
     if (userAddress == null) {
@@ -106,59 +85,13 @@ export class ViewLendDetailsComponent implements OnInit {
       });
     await this.web3Service.getAccounts().then((accs) => {
       this.accounts = accs;
-      console.log("this.accounts is: ");
-      console.log(this.accounts);
       this.sender=this.accounts[0];
     });
-
-    console.log("this.accounts[0] is: ");
-    console.log(this.sender["address"]);
-    
-
-    this.web3Service.artifactsToContract(credit_agreement_artifacts)
-      .then((CreditAgreementAbstraction) => {
-        this.CreditAgreement = CreditAgreementAbstraction;
-        console.log("before deployed");
-        this.CreditAgreement.new(this.sender["address"],this.lenders,this.lenderShares,this.application.totalLoanAmount,1581035048, {from: this.accounts[0]["address"]}).then(deployed => {
-          console.log("deployed CreditAgreement");
-          console.log(deployed);
-          this.test();
-          // deployed.Transfer({}, (err, ev) => {
-          //   console.log('try test');
-          //   this.test();
-          // });
-        });
-      });
-
-    console.log("now check");
-    console.log("before flag is: ", this.flag);
-    this.canSign();
-    console.log("flag is: ",this.flag);
   }
 
   logout() {
     this.localStorageService.setUser("");
     this.router.navigateByUrl("/login");
-  }
-
-  async test(){
-    console.log("enter test");
-    try {
-      const deployedCreditAgreement = await this.CreditAgreement.new(this.sender["address"],this.lenders,this.lenderShares,this.application.totalLoanAmount,1581035048, {from: this.accounts[0]["address"]});
-      console.log("deployedCreditAgreement is:");
-      console.log(deployedCreditAgreement);
-      const deployedTestContract = await this.contractService.getDeployedContract('CreditAgreement',deployedCreditAgreement.address);
-      console.log("contract got: ",deployedTestContract);
-      const result = await deployedCreditAgreement.signAsALender.signAsALender({from: this.userAddress});
-      console.log("first result is: ");
-      console.log(result);
-      const check = await deployedCreditAgreement.hasEveryoneSigned;
-      console.log("second result is: ");
-      console.log(check);
-    } catch (e) {
-      console.log(e);
-      console.log('Error getting balance; see log.');
-    }
   }
 
   async getBalance() {
@@ -182,48 +115,111 @@ export class ViewLendDetailsComponent implements OnInit {
     this.router.navigateByUrl("dashboard");
   }
 
-  canSign(){
-    let details = this.application.lenderDetails;
-    // console.log("this.account is:");
-    // console.log(this.account);
-    for (let detail of details){
-      // console.log("detail.lender is:");
-      // console.log(detail.lender);
-      if (detail.lender=this.account){
-        // console.log("the same");
-        this.flag=true;
-        return;
+
+  async submit() {
+    //first check if the new total lend amount will larger than the total loan amount
+    if(this.calculateAmount()>this.application.totalLoanAmount){
+      alert("the amout is larger than the total amount of this application.");
+      return;
+    }
+
+    //create lend detail record
+    let lendDetail = {
+      ID: Date.now(),
+      lender:await this.web3Service.getAccountOf(this.userAddress),
+      amount: this.lendAmount,
+      detailStatus:"",
+    }
+    
+    this.application["lenderDetails"].push(lendDetail);
+    this.application["coveredAmount"]+=this.lendAmount;
+    this.localStorageService.updateLoanApplication(this.application);
+
+    //then check if the new total lend amount equals to the total loan amount
+    if(this.calculateAmount() == this.application.totalLoanAmount){
+      this.application["status"] = "LendCompleted";
+    }
+
+    alert("submit successfully");
+  }
+
+  calculateAmount(){
+    let sum=0;
+    if(this.application.lenderDetails){
+      for(let lendDetail of this.application.lenderDetails){
+        sum = sum + lendDetail.amount;
       }
     }
+    return sum;
   }
 
-  async sign(){
-    try {
-      console.log("enter sign");
-      const deployedUSDCoin = await this.USDCoin.deployed();
-      
-      await deployedUSDCoin.signAsALender;
-      const check = await deployedUSDCoin.hasEveryoneSigned;
-      console.log("result is: ");
-      console.log(check);
-      
-    } catch (e) {
-      console.log(e);
-      console.log('Error getting balance; see log.');
+  async lendAllLoanApplication(application) {
+    //first check the status
+    if (application["status"] == "LendCompleted"){
+      alert("This application get enough lend. You cannot lend more.")
+      return;
     }
 
-
-    // let details = this.application.lenderDetails;
-    // // for(let detail of details){
-    // //   if(detail.lender=this.account )
-    // // }
-    // for (let detail of details){
-    //   if(detail.lender=this.account && detail.detailStatus!="signed"){
-    //     detail.detailStatus= "signed";
-    //   }
-    // }
-    alert("all of your lender details are signed successfully!");
-    // this.localStorageService.updateLoanApplication(this.application);
+    //if the application has lend detail record, click this button only can lend the rest amount
+    let currentAmount=this.calculateAmount();
+    let lendDetail = {
+      ID: Date.now(),
+      lender:await this.web3Service.getAccountOf(this.userAddress),
+      amount: application.totalLoanAmount - currentAmount,
+      detailStatus:"",
+    }
+    application["status"] = "LendCompleted";
+    application["coveredAmount"]=application.totalLoanAmount;
+    application["lenderDetails"].push(lendDetail);
+    this.localStorageService.updateLoanApplication(application);
+    alert("Lend successfully. This application got enough money.");
   }
 
+  canSign() {
+    let details = this.application["lenderDetails"];
+    for(let detail of details){
+      if(detail.lender["address"]==this.userAddress){
+        return true;
+      }
+    }
+    return  false;
+  }
+
+  async sign() {
+    var deployedAgreementContract;
+    await this.contractService.getDeployedContract('CreditAgreement', this.application.aggreementAddress)
+      .then(async (deployedContract) => {
+        deployedAgreementContract = deployedContract;
+        console.log("deployedAgreementContract is:");
+        console.log(deployedAgreementContract);
+        console.log("test sign from: ",this.userAddress);
+        await deployedAgreementContract.signAsALender({ from: this.userAddress }).then(data => console.log(data));
+        console.log("check sign! ",await deployedAgreementContract.check({from: this.userAddress}));
+        console.log("successfully");
+    })
+  }
+
+  async deploy() {
+    console.log("enter deploy");
+
+    //get lenders
+    for(let detail of this.application.lenderDetails){
+      console.log("detail.lender.address is: ");
+      console.log(detail.lender.address);
+      console.log(this.lenders.indexOf(detail.lender.address));
+      if(this.lenders.indexOf(detail.lender.address!=-1)){
+        console.log("enter push");
+        this.lenders.push(detail.lender.address);
+        this.lenderShares.push(0);
+      }
+      else{
+        continue;
+      }
+    }
+    
+    const deployedAgreementContract = await this.contractService.deployAgreementContract
+      (this.application, this.lenders, this.lenderShares, this.accounts[0]["address"]);
+    this.application["aggreementAddress"] = deployedAgreementContract["address"];
+    this.localStorageService.updateLoanApplication(this.application);
+  }
 }

@@ -56,7 +56,7 @@
                             <li *ngFor="let lenderDetail of application.lenderDetails">{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}   {{lenderDetail.lender.name}}</li>
                         </th>
                         <td>
-                        <button class="btn btn-light m-1" (click)="view(application)">View Lend Details</button>
+                        <button class="btn btn-light m-1" [routerLink]="['/view', application.id]">View Lend Details</button>
                 </td>
             </ng-container>
         </tr>
