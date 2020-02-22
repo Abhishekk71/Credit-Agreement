@@ -16,13 +16,10 @@ contract CreditAgreement {
         bool hasSigned;
     }
     Lender[] lenders;
-    
     uint amount;
 
     uint agreementDate;
     uint closingDate;
-
-    Facility[] facilities;
 
     constructor(address _borrower, address[] memory _lenders, uint[] memory _lenderShares, uint _amount, uint _closingDate ) public {
         owner = msg.sender;
@@ -55,11 +52,7 @@ contract CreditAgreement {
         require(isLender == true, "Only lender is allowed to perform this action");
         _;
     }
-
-    function addFacility(address facilityAddress) public onlyOwner {
-        facilities.push(Facility(facilityAddress));
-    }
-
+    
     function signAsABorrower() public onlyBorrower {
         hasBorrowerSigned = true;
         if(hasEveryoneSigned() == true) {
