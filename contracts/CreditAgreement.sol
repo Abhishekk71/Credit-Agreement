@@ -16,7 +16,6 @@ contract CreditAgreement {
         bool hasSigned;
     }
     Lender[] lenders;
-    
     uint amount;
 
     uint agreementDate;
@@ -56,11 +55,11 @@ contract CreditAgreement {
         _;
     }
 
-    function addFacility(address facilityAddress, address lender) public onlyOwner {
+    function addFacility(address facilityAddress, address lender) public {
         facilities[lender] = facilityAddress;
     }
 
-    function getFacility(address lender) public view{
+    function getFacility(address lender) public view returns(address){
         return facilities[lender];
     }
 

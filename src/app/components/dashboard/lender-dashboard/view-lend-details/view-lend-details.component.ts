@@ -208,14 +208,14 @@ export class ViewLendDetailsComponent implements OnInit {
           for (let detail of this.application.lenderDetails) {
             const deployedFacilityContract = await this.contractService.deployFacilityContract
             (detail.amount, 0, this.application.id, this.application.id, this.accounts[0]["address"]);
-            console.log("deployedFacilityContract is: ");
-            console.log(deployedFacilityContract);
-            this.application.facilityAddresses.push(deployedFacilityContract["address"]);
+            await deployedAgreementContract.addFacility(deployedFacilityContract["address"], detail.lender["address"], { from: this.accounts[0].address });
+            //await deployedAgreementContract.getFacility(detail.lender["address"], { from: this.userAddress }).then(data => console.log(data));
           }
-          
+          this.localStorageService.updateLoanApplication(this.application);
+         
         }
       })
-    this.localStorageService.updateLoanApplication(this.application);
+    
     alert("Signed successfully!");
   }
 

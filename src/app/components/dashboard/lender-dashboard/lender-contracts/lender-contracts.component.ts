@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router,ActivatedRoute,Params } from '@angular/router';
 import { LocalStorageService } from '../../../../services/local-storage.service';
 import { Web3Service } from '../../../../services/web3.service';
+import { ContractService } from './../../../../services/contract.service';
 
 
 declare let require: any;
@@ -27,6 +28,7 @@ export class LenderContractsComponent implements OnInit {
   constructor(private router: Router, 
     private localStorageService : LocalStorageService, 
     private web3Service: Web3Service,
+    private contractService: ContractService,
     public activeRoute:ActivatedRoute) { }
 
   async ngOnInit() {
@@ -80,6 +82,19 @@ export class LenderContractsComponent implements OnInit {
     }
     return sum;
   }
+
+  // getMaturityDate(application) {
+  //   var deployedAgreementContract;
+  //   await this.contractService.getDeployedContract('CreditAgreement', this.application.aggreementAddress)
+  //     .then(async (deployedContract) => {
+  //       deployedAgreementContract = deployedContract;
+  //       console.log("deployedAgreementContract is:");
+  //       console.log(deployedAgreementContract);
+  //       console.log("test sign from: ", this.userAddress);
+  //       await deployedAgreementContract.signAsALender({ from: this.userAddress }).then(data => console.log(data));
+  //       console.log("check sign! ", await deployedAgreementContract.check({ from: this.userAddress }));
+  //       console.log("check everyontsigned: ", await deployedAgreementContract.hasEveryoneSigned({ from: this.userAddress }));
+  // }
 
   
 
