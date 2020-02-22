@@ -38,7 +38,7 @@ export class ContractService {
         let contractArtifacts = require(`./../../../build/contracts/Facility.json`);
         let _contract = contract(contractArtifacts);
         _contract.setProvider(this.web3Service.getWeb3().currentProvider);
-        await _contract.new(_amount, _fee, _maturityDate, _expiryDate, Date.parse(new Date().toString()), { from: _from})
+        await _contract.new(_amount, _fee, _maturityDate, _expiryDate, { from: _from})
           .then((deployedFacilityContract) => {
             resolve(deployedFacilityContract);
             console.log("deployedAgreementContract is:");

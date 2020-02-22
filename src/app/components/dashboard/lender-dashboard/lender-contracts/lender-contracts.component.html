@@ -31,12 +31,12 @@
               <tr *ngIf="application.type=='REVOLVER'">
                 <td>{{application.name}}</td>
                 <td>{{application.borrower.name}}</td>
-                <td>sum(application)</td>
+                <td>{{sum(application)}}</td>
                 <td>{{application.totalLoanAmount}}</td>
                 <td>{{application.term}}</td>
                 <td>{{application.rateOfInterest}}</td>
                 <th >
-                  <li *ngFor="let lenderDetail of application.lenderDetails">{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}   {{lenderDetail.lender.name}}</li>
+                  <li *ngFor="let lenderDetail of application.lenderDetails">{{lenderDetail.lender.name}}</li>
                 </th>
                 <td>starting date</td>
                 <td>ending date</td>
