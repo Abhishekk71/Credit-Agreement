@@ -49,6 +49,9 @@ export class LenderDashboardComponent implements OnInit {
   }
 
   canSign(application) {
+    if (application.status != "Pending") {
+      return false;
+    }
     let details = application["lenderDetails"];
     for(let detail of details){
       if(detail.lender["address"]==this.userAddress){

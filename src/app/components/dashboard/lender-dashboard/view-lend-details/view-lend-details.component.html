@@ -48,7 +48,7 @@ Lend Details
           <td>{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}</td>
           <td>{{lenderDetail.lender.name}}</td>
           <td>{{lenderDetail.amount}}</td>
-          <td *ngIf="lenderDetail.detailStatus=='signed'">Signed</td>
+          <td>{{lenderDetail.detailStatus}}</td>
         </tr>
       </ng-container>
       
@@ -75,5 +75,6 @@ Lend Details
 <div class="form-group">
   <button class="btn btn-light" *ngIf="canSign()" (click)="deploy()">deploy</button>
   <button class="btn btn-light" *ngIf="canSign()" (click)="sign()">Sign</button>
+  <button class="btn btn-light"  (click)="signAsBorrower()">Sign as borrower</button>
   <button class="btn btn-light" (click)="back()">Back</button>
 </div>
