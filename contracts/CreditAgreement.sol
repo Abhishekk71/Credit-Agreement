@@ -22,7 +22,7 @@ contract CreditAgreement {
     uint agreementDate;
     uint closingDate;
 
-    Facility[] facilities;
+    mapping(address => address) public facilities;
 
     constructor(address _borrower, address[] memory _lenders, uint[] memory _lenderShares, uint _amount, uint _closingDate ) public {
         owner = msg.sender;
@@ -56,8 +56,12 @@ contract CreditAgreement {
         _;
     }
 
-    function addFacility(address facilityAddress) public onlyOwner {
-        facilities.push(Facility(facilityAddress));
+    function addFacility(address facilityAddress, address lender) public onlyOwner {
+        facilities[lender] = facilityAddress;
+    }
+
+    function getFacility(address lender) public view{
+        return facilities[lender];
     }
 
     function signAsABorrower() public onlyBorrower {
