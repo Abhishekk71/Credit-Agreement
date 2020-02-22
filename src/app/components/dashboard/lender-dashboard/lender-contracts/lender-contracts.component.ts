@@ -71,6 +71,16 @@ export class LenderContractsComponent implements OnInit {
     console.log(this.applications);
   }
 
+  sum(application){
+    let sum = 0;
+    for (let detail of application.lenderDetails) {
+      if (detail.lender.address == this.userAddress) {
+        sum += detail.amount;
+      }
+    }
+    return sum;
+  }
+
   
 
 

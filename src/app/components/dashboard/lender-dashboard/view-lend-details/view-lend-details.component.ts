@@ -137,7 +137,7 @@ export class ViewLendDetailsComponent implements OnInit {
 
     //then check if the new total lend amount equals to the total loan amount
     if(this.calculateAmount() == this.application.totalLoanAmount){
-      this.application["status"] = "LendCompleted";
+      this.application["status"] = "Pending";
     }
 
     alert("submit successfully");
@@ -168,7 +168,7 @@ export class ViewLendDetailsComponent implements OnInit {
       amount: application.totalLoanAmount - currentAmount,
       detailStatus:"",
     }
-    application["status"] = "LendCompleted";
+    application["status"] = "Pending";
     application["coveredAmount"]=application.totalLoanAmount;
     application["lenderDetails"].push(lendDetail);
     this.localStorageService.updateLoanApplication(application);
@@ -192,11 +192,48 @@ export class ViewLendDetailsComponent implements OnInit {
         deployedAgreementContract = deployedContract;
         console.log("deployedAgreementContract is:");
         console.log(deployedAgreementContract);
-        console.log("test sign from: ",this.userAddress);
+        console.log("test sign from: ", this.userAddress);
         await deployedAgreementContract.signAsALender({ from: this.userAddress }).then(data => console.log(data));
-        console.log("check sign! ",await deployedAgreementContract.check({from: this.userAddress}));
-        console.log("successfully");
-    })
+        console.log("check sign! ", await deployedAgreementContract.check({ from: this.userAddress }));
+        console.log("check everyontsigned: ", await deployedAgreementContract.hasEveryoneSigned({ from: this.userAddress }));
+        for (let detail of this.application.lenderDetails) {
+          if (detail.lender["address"] == this.userAddress) {
+            detail.detailStatus = "SIGNED";
+          }
+        }
+        if (await deployedAgreementContract.hasEveryoneSigned({ from: this.userAddress })) {
+          this.application.status = "SIGNED";
+          this.application["facilityAddresses"] = [];
+          this.localStorageService.updateLoanApplication(this.application);
+          for (let detail of this.application.lenderDetails) {
+            const deployedFacilityContract = await this.contractService.deployFacilityContract
+            (detail.amount, 0, this.application.id, this.application.id, this.accounts[0]["address"]);
+            console.log("deployedFacilityContract is: ");
+            console.log(deployedFacilityContract);
+            this.application.facilityAddresses.push(deployedFacilityContract["address"]);
+          }
+          
+        }
+      })
+    this.localStorageService.updateLoanApplication(this.application);
+    alert("Signed successfully!");
+  }
+
+  async signAsBorrower() {
+    const _borrower = this.application.borrower["address"];
+    var deployedAgreementContract;
+    await this.contractService.getDeployedContract('CreditAgreement', this.application.aggreementAddress)
+      .then(async (deployedContract) => {
+        deployedAgreementContract = deployedContract;
+        console.log("deployedAgreementContract is:");
+        console.log(deployedAgreementContract);
+        console.log("test sign from: ", this.userAddress);
+        await deployedAgreementContract.signAsABorrower({ from: _borrower }).then(data => console.log(data));
+        //console.log("check sign! ", await deployedAgreementContract.check({ from: this.userAddress }));
+        console.log("check everyont sign: ",await deployedAgreementContract.hasEveryoneSigned({ from: this.userAddress }));
+      })
+    
+    alert("Signed successfully!");
   }
 
   async deploy() {
