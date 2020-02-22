@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { LocalStorageService } from './../../../../services/local-storage.service';
 import { Web3Service } from './../../../../services/web3.service';
 import { SharedService } from './../../../../services/shared.service';
+import {ContractService} from './../../../../services/contract.service';
 
 const usd_coin_artifacts = require('./../../../../../../build/contracts/USDCoin.json');
 
@@ -18,6 +19,7 @@ export class RepaymentDashboardComponent implements OnInit {
   USDCoin: any;
   accountBalance = 0;
   loanApplications = [];
+  deployedContracts = [];
   contranctToPay = [];
   Digest_show_hide_val=true;
 
@@ -28,7 +30,8 @@ export class RepaymentDashboardComponent implements OnInit {
   constructor(private router: Router,
     private localStorageService: LocalStorageService,
     private web3Service: Web3Service,
-    private sharedBalance: SharedService) {
+    private sharedBalance: SharedService,
+    private contractService: ContractService) {
       this.sharedBalance.balanceData.emit(this.accountBalance);
     }
 
@@ -79,6 +82,20 @@ export class RepaymentDashboardComponent implements OnInit {
     }
   }
 
+  async getDeployedContracts(){//contractName:any, contractAddress:any
+    console.log(this.loanApplications);
+    let contractName = "CreditAgreement";
+    let contractAddress = this.loanApplications[0].aggreementAddress;
+    var deployedContract;
+    console.log("get deployed contract");
+    await this.contractService.getDeployedContract(contractName, contractAddress)
+    .then((dContract) => {
+      deployedContract = dContract;
+      console.log("deployed agreement contract found");
+      console.log(deployedContract);
+    });
+  }
+
   async sendCoinFromTo(amount:any, fromAddress:any, toAddress:any){
     console.log('Sending coins' + amount + ' from ' + fromAddress +' to ' + toAddress);
     try{
@@ -118,14 +135,9 @@ export class RepaymentDashboardComponent implements OnInit {
   }
 
   testTransaction(){
-    for (let application of this.loanApplications){
-      if (application.borrower.address == this.userAddress){
-        let receiverAddress = application.lenderDetails[0].lender.address
-        console.log(receiverAddress);
-        this.repayTo(receiverAddress, 1);          
-        break;
-      }
-    }
+    let escrewAddress = this.loanApplications[0].aggreementAddress;
+    this.repayTo(escrewAddress,1);
+
   }
 
   Digest_show=function(){
