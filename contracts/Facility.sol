@@ -9,6 +9,7 @@ contract Facility {
     // event PaymentCompletion(uint indexed orderId, address indexed customer, uint value, PaymentStatus status);
 
     address owner;
+    // USDCoin usdcoinInstance;
 
     uint amount;
     uint balance;
@@ -38,6 +39,7 @@ contract Facility {
     constructor(uint _amount, uint _fee, uint _maturityDate, uint _expiryDate) public {
         owner = msg.sender;
         amount = _amount;
+        // usdcoinInstance = USDCoin(_usdcoinAddress);
         balance = 0;
         paymentID = 0;
         fee = _fee;

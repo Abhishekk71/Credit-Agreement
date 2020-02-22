@@ -22,6 +22,7 @@
                 <th>Rate of Interest</th>
                 <th>Lenders</th>
                 <th>Covered Amount</th>
+                <th>Status</th>
                 <th>Actions</th>
             </thead>
             <tbody>
@@ -33,11 +34,11 @@
                         <td>{{application.type}}</td>
                         <td>{{application.term}}</td>
                         <td>{{application.rateOfInterest}}</td>
-                        <td>{{application.status}}</td>
-                        <!--<th scope="row">
-                            <li *ngFor="let lenderDetail of application.lenderDetails">{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}   {{lenderDetail.lender.name}}</li>
-                        </th>-->
+                        <th scope="row">
+                            <li *ngFor="let lenderDetail of application.lenderDetails">{{lenderDetail.ID | date:'MM-dd'}}   {{lenderDetail.lender.name}}</li>
+                        </th>
                         <td><a [routerLink]="['/view', application.id]">{{application.coveredAmount}}</a>/{{application.totalLoanAmount}}</td>
+                        <td>{{application.status}}</td>
                         <td>
                             <button class="btn btn-sm btn-danger m-1" (click)="mark(application)">Invalid</button>
                             <button *ngIf="application.coveredAmount != application.totalLoanAmount" class="btn btn-sm btn-primary m-1"  [routerLink]="['/view', application.id]">Lend</button>

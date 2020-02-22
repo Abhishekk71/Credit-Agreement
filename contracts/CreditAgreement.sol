@@ -21,6 +21,8 @@ contract CreditAgreement {
     uint agreementDate;
     uint closingDate;
 
+    mapping(address => address) public facilities;
+
     constructor(address _borrower, address[] memory _lenders, uint[] memory _lenderShares, uint _amount, uint _closingDate ) public {
         owner = msg.sender;
         borrower = _borrower;
@@ -52,7 +54,15 @@ contract CreditAgreement {
         require(isLender == true, "Only lender is allowed to perform this action");
         _;
     }
-    
+
+    function addFacility(address facilityAddress, address lender) public {
+        facilities[lender] = facilityAddress;
+    }
+
+    function getFacility(address lender) public view returns(address){
+        return facilities[lender];
+    }
+
     function signAsABorrower() public onlyBorrower {
         hasBorrowerSigned = true;
         if(hasEveryoneSigned() == true) {

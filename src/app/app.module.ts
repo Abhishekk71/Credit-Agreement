@@ -30,6 +30,7 @@ const routes = [
   { path: "view/:id", component: ViewLendDetailsComponent},
   { path: "lenderrepayment/:id", component: RepaymentComponent},
   { path: "borrower-repayment", component: RepaymentDashboardComponent},
+  { path: "borrower", component: BorrowerDashboardComponent},
   { path: "usdcoin", component: USDCoinComponent }, 
   { path: '**', component: LoginComponent },
 ];
