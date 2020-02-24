@@ -63,6 +63,11 @@ export class RepaymentComponent implements OnInit {
 
   }
 
+  logout() {
+    this.localStorageService.setUser("");
+    this.router.navigateByUrl("/login");
+  }
+
   back(){
     this.router.navigateByUrl("dashboard");
   }

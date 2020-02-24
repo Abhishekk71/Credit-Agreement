@@ -138,6 +138,7 @@ export class ViewLendDetailsComponent implements OnInit {
     //then check if the new total lend amount equals to the total loan amount
     if(this.calculateAmount() == this.application.totalLoanAmount){
       this.application["status"] = "Pending";
+      this.application["facilityAddresses"] = [];
     }
 
     alert("submit successfully");
@@ -155,7 +156,7 @@ export class ViewLendDetailsComponent implements OnInit {
 
   async lendAllLoanApplication(application) {
     //first check the status
-    if (application["status"] == "LendCompleted"){
+    if (application["status"] == "Pending"){
       alert("This application get enough lend. You cannot lend more.")
       return;
     }
@@ -171,6 +172,7 @@ export class ViewLendDetailsComponent implements OnInit {
     application["status"] = "Pending";
     application["coveredAmount"]=application.totalLoanAmount;
     application["lenderDetails"].push(lendDetail);
+    application["facilityAddresses"] = [];
     this.localStorageService.updateLoanApplication(application);
     alert("Lend successfully. This application got enough money.");
   }
@@ -198,21 +200,17 @@ export class ViewLendDetailsComponent implements OnInit {
         console.log("check everyontsigned: ", await deployedAgreementContract.hasEveryoneSigned({ from: this.userAddress }));
         for (let detail of this.application.lenderDetails) {
           if (detail.lender["address"] == this.userAddress) {
+            const deployedFacilityContract = await this.contractService.deployFacilityContract
+            (detail.amount, 0, this.application.id, this.application.id, this.accounts[0]["address"]);
+            await deployedAgreementContract.addFacility(deployedFacilityContract["address"], detail.lender["address"], { from: this.accounts[0].address });
             detail.detailStatus = "SIGNED";
+            await this.sendCoinFromTo(detail.amount, this.userAddress, this.application.borrower.address);
+            console.log("send ok!");
           }
         }
         if (await deployedAgreementContract.hasEveryoneSigned({ from: this.userAddress })) {
           this.application.status = "SIGNED";
-          this.application["facilityAddresses"] = [];
           this.localStorageService.updateLoanApplication(this.application);
-          for (let detail of this.application.lenderDetails) {
-            const deployedFacilityContract = await this.contractService.deployFacilityContract
-            (detail.amount, 0, this.application.id, this.application.id, this.accounts[0]["address"]);
-            await deployedAgreementContract.addFacility(deployedFacilityContract["address"], detail.lender["address"], { from: this.accounts[0].address });
-            //await deployedAgreementContract.getFacility(detail.lender["address"], { from: this.userAddress }).then(data => console.log(data));
-          }
-          this.localStorageService.updateLoanApplication(this.application);
-         
         }
       })
     
@@ -258,5 +256,23 @@ export class ViewLendDetailsComponent implements OnInit {
       (this.application, this.lenders, this.lenderShares, this.accounts[0]["address"]);
     this.application["aggreementAddress"] = deployedAgreementContract["address"];
     this.localStorageService.updateLoanApplication(this.application);
+  }
+
+  async sendCoinFromTo(amount:any, fromAddress:any, toAddress:any){
+    console.log('Sending coins' + amount + ' from ' + fromAddress +' to ' + toAddress);
+    try{
+      const deployedUSDCoin = await this.USDCoin.deployed();
+      const transaction = await deployedUSDCoin.transfer.sendTransaction(toAddress, amount, { from: fromAddress });
+      if (!transaction) {
+        console.log('Transaction failed!');
+      } else {
+        console.log('Transaction complete!');
+        this.getBalance();
+      }
+    } catch (e) {
+      console.log(e);
+      console.log('Error sending coin; see log.');
+    }
+
   }
 }

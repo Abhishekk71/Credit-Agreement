@@ -16,7 +16,8 @@ export class BorrowerDashboardComponent implements OnInit {
   type = "REVOLVER";
   term = 0;
   rateOfInterest = 0;
-  loanApplications=[];
+  loanApplications = [];
+  startingDate=0;
 
   constructor(private router: Router,
     private localStorageService: LocalStorageService, ) { }
@@ -39,6 +40,7 @@ export class BorrowerDashboardComponent implements OnInit {
   }
 
   async submit() {
+    
     let loanApplication = {
       id: Date.now(),
       name: this.name,
@@ -46,9 +48,19 @@ export class BorrowerDashboardComponent implements OnInit {
       totalLoanAmount: this.totalLoanAmount,
       type: this.type,
       term: this.term,
-      rateOfInterest: this.rateOfInterest
+      rateOfInterest: this.rateOfInterest,
+      startingDate: this.startingDate,
+      endingDate:0,
     }
+    var str = this.startingDate + " 00:00:00";
+    console.log(str);
+    var date = new Date(str);
+    var time = date.getTime();
+    
+    loanApplication.startingDate = time;
 
+    date.setDate(date.getFullYear() + this.term);
+    loanApplication.endingDate = date.getTime();
     this.localStorageService.addLoanApplication(loanApplication);
 
     alert("Your application was successfully submitted");
@@ -58,7 +70,9 @@ export class BorrowerDashboardComponent implements OnInit {
     this.type = "REVOLVER";
     this.term = 0;
     this.rateOfInterest = 0;
+    this.startingDate = 0;
   }
+  
 
   // repayment(){
   //   this.router.navigateByUrl("repayment-dashboard");
