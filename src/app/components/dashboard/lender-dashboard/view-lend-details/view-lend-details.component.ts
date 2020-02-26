@@ -268,6 +268,8 @@ export class ViewLendDetailsComponent implements OnInit {
       } else {
         console.log('Transaction complete!');
         this.getBalance();
+        console.log("console this is:");
+        console.log(transaction);
       }
     } catch (e) {
       console.log(e);
