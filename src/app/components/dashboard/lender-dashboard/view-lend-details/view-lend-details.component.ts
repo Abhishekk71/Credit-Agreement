@@ -28,7 +28,8 @@ export class ViewLendDetailsComponent implements OnInit {
   lenders=[];
   lenderShares=[];
   sender ="";
-  buttonName="";
+  buttonName = "";
+  fee = 0;
 
   flag=false;
 
@@ -128,17 +129,19 @@ export class ViewLendDetailsComponent implements OnInit {
       ID: Date.now(),
       lender:await this.web3Service.getAccountOf(this.userAddress),
       amount: this.lendAmount,
-      detailStatus:"",
+      detailStatus: "",
+      fee:this.fee*0.01,
     }
     
     this.application["lenderDetails"].push(lendDetail);
     this.application["coveredAmount"]+=this.lendAmount;
     this.localStorageService.updateLoanApplication(this.application);
 
+    this.fee = 0;
+
     //then check if the new total lend amount equals to the total loan amount
     if(this.calculateAmount() == this.application.totalLoanAmount){
       this.application["status"] = "Pending";
-      this.application["facilityAddresses"] = [];
     }
 
     alert("submit successfully");
@@ -167,13 +170,14 @@ export class ViewLendDetailsComponent implements OnInit {
       ID: Date.now(),
       lender:await this.web3Service.getAccountOf(this.userAddress),
       amount: application.totalLoanAmount - currentAmount,
-      detailStatus:"",
+      detailStatus: "",
+      fee:this.fee,
     }
     application["status"] = "Pending";
     application["coveredAmount"]=application.totalLoanAmount;
     application["lenderDetails"].push(lendDetail);
-    application["facilityAddresses"] = [];
     this.localStorageService.updateLoanApplication(application);
+    this.fee = 0;
     alert("Lend successfully. This application got enough money.");
   }
 
@@ -200,8 +204,15 @@ export class ViewLendDetailsComponent implements OnInit {
         console.log("check everyontsigned: ", await deployedAgreementContract.hasEveryoneSigned({ from: this.userAddress }));
         for (let detail of this.application.lenderDetails) {
           if (detail.lender["address"] == this.userAddress) {
-            const deployedFacilityContract = await this.contractService.deployFacilityContract
-            (detail.amount, 0, this.application.id, this.application.id, this.accounts[0]["address"]);
+            var deployedFacilityContract;
+            if (this.application.type == "REVOLVER") {
+              deployedFacilityContract = await this.contractService.deployRevolverFacility
+                (detail.amount, detail.fee, this.application.maturityDate, this.application.expirationDate, this.accounts[0]["address"]);
+            }
+            else {
+              deployedFacilityContract = await this.contractService.deployTermLoanFacility
+                (detail.amount, detail.fee, this.application.maturityDate, this.application.expirationDate, this.application.scheduleType.toString, this.application.endingDate, this.accounts[0]["address"]);
+            }
             await deployedAgreementContract.addFacility(deployedFacilityContract["address"], detail.lender["address"], { from: this.accounts[0].address });
             detail.detailStatus = "SIGNED";
             await this.sendCoinFromTo(detail.amount, this.userAddress, this.application.borrower.address);
