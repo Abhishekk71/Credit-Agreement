@@ -29,7 +29,9 @@ export class RepaymentDashboardComponent implements OnInit {
 
   Digest_show_hide_val=true;
 
-  repayLenders: any;
+  repayLender: any;
+  repayLenderList: any;
+  repayRate = 0;
   selectedRepayment: any;
   singleRepayAmount:number;
   totalRepayAmount = 0;
@@ -186,6 +188,17 @@ export class RepaymentDashboardComponent implements OnInit {
   async repayTo(receiver, amount){
     console.log('Sending coins' + amount + ' from ' + this.userAddress +' to ' + receiver);
     this.sendCoinFromTo(amount, this.userAddress, receiver);
+    console.log("Transaction Success!");
+    
+  }
+
+  repay(){
+    let amount = this.singleRepayAmount;// + this.singleRepayAmount*this.repayRate/100;
+    console.log(this.repayLender);
+    
+    this.repayTo(this.repayLender,amount);
+    console.log("Repayment Success!");
+    
   }
 
   testTransaction(){
@@ -208,11 +221,13 @@ export class RepaymentDashboardComponent implements OnInit {
       let loanApplications = this.localStorageService.getLoanApplications();
       for (let application of loanApplications){
         if (application.aggreementAddress == agrAddr){
-          console.log(application.lenderDetails);
-          
+          this.repayLenderList = application.lenderDetails;
+          this.repayRate = application.rateOfInterest;
         }
       }
     }
+    console.log(this.repayLenderList);
+    
   }
 
 }

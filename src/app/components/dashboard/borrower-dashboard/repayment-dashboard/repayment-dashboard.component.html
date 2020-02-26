@@ -14,15 +14,15 @@
   <div id="collapseOne" class="panel-collapse collapse in">
     <div class="panel-body">
       <label for="">Pay to:</label>
-        <select class="form-control">
-          <ng-container>
-            <option>lender.address.name</option>
+        <select class="form-control" [(ngModel)]="repayLender">
+          <ng-container *ngIf="repayLenderList">
+            <option *ngFor="let repayLender of repayLenderList" [value]="repayLender.lender.address">{{repayLender.lender.name}}</option>
           </ng-container>
         </select>
         <label for="">Amount</label>
         <input type="number" class="form-control" id="singleRepayAmount" [(ngModel)]="singleRepayAmount" />
-        <label for="">Total Amount: {{totalRepayAmount}}</label>
-        <button>Confirm</button>
+        <label for="">Total Amount: {{totalRepayAmount}} USDCoin</label>
+        <button (click)="repay()">Confirm</button>
     </div>
   </div>
   <div id="collapseTwo" class="panel-collapse collapse in">
