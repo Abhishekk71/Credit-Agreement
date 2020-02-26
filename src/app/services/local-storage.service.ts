@@ -12,6 +12,9 @@ export class LocalStorageService {
     if (localStorage.getItem("loanApplications") == null) {
       localStorage.setItem("loanApplications", "[]");
     }
+    if (localStorage.getItem("transactions") == null) {
+      localStorage.setItem("transactions", "[]");
+    }
   }
 
   setUser(user) {
@@ -48,5 +51,18 @@ export class LocalStorageService {
     //console.log(loanApplications);
     localStorage.setItem("loanApplications", JSON.stringify(loanApplications));
   }
+
+  getTransactions() {
+    return JSON.parse(localStorage.getItem("transactions"))
+  }
+
+  addTransactions(transaction) {
+    let transactions = this.getTransactions();
+    transactions.push(transaction);
+    localStorage.setItem("transactions", JSON.stringify(transactions));
+    console.log(transactions);
+  }
+
+
 
 }
