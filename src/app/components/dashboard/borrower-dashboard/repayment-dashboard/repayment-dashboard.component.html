@@ -20,14 +20,16 @@
           </ng-container>
         </select>
         <label for="">Amount</label>
-          <input type="number" class="form-control" id="singleRepayAmount" [(ngModel)]="singleRepayAmount" />
+        <input type="number" class="form-control" id="singleRepayAmount" [(ngModel)]="singleRepayAmount" />
         <label for="">Total Amount: {{totalRepayAmount}}</label>
         <button>Confirm</button>
     </div>
   </div>
   <div id="collapseTwo" class="panel-collapse collapse in">
     <div class="panel-body">
-      <label for="">Request</label>
+      <label for="">Amount</label>
+      <input type="number" class="form-control" id="requestAmount"/>
+      <button>Request</button>
     </div>
   </div>
 </div>
@@ -47,7 +49,7 @@
     </thead>
     <tbody>
       <ng-container *ngFor="let repaymentRecord of repaymentList; let i=index">
-        <tr id=tr{{i}}>
+        <tr id={{repaymentRecord.agreementAddress}}>
           <td>{{i}}</td>
           <td>{{repaymentRecord.contractName}}</td>
           <td>{{repaymentRecord.dueAmount}}</td>

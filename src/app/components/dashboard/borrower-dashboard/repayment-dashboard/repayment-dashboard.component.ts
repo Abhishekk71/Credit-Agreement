@@ -29,7 +29,7 @@ export class RepaymentDashboardComponent implements OnInit {
 
   Digest_show_hide_val=true;
 
-  repayLender: any;
+  repayLenders: any;
   selectedRepayment: any;
   singleRepayAmount:number;
   totalRepayAmount = 0;
@@ -95,7 +95,8 @@ export class RepaymentDashboardComponent implements OnInit {
           let _rate = application.rateOfInterest;
           let _allLenders = application.lenderDetails;
           let _type = application.type;
-          let rp = new repayment(_contractName,_dueAmount, _limitation, _dueDate,_rate,_allLenders,_type);        
+          let _agreementAddress = application.aggreementAddress;
+          let rp = new repayment(_contractName,_dueAmount, _limitation, _dueDate,_rate,_allLenders,_type,_agreementAddress);        
           this.repaymentList.push(rp);
         }
       }
@@ -202,9 +203,16 @@ export class RepaymentDashboardComponent implements OnInit {
 
   testID($event){
     console.log($event.target.parentElement.parentElement.id);
-    this.repayLender = document.getElementById($event.target.parentElement.parentElement.id);
-    console.log(this.repayLender);
-    
+    let agrAddr = $event.target.parentElement.parentElement.id
+    if(this.localStorageService.getLoanApplications()){
+      let loanApplications = this.localStorageService.getLoanApplications();
+      for (let application of loanApplications){
+        if (application.aggreementAddress == agrAddr){
+          console.log(application.lenderDetails);
+          
+        }
+      }
+    }
   }
 
 }
@@ -217,8 +225,9 @@ class repayment {
   rate: number;
   allLenders: any;
   type : string;
+  agreementAddress: any;
 
-  constructor(_contractName,_dueAmount,_limitation,_dueDate,_rate,_allLenders,_type) {
+  constructor(_contractName,_dueAmount,_limitation,_dueDate,_rate,_allLenders,_type,_agreementAddress) {
     this.contractName = _contractName;
     this.dueAmount = _dueAmount;
     this.limitation = _limitation;
@@ -226,5 +235,6 @@ class repayment {
     this.rate = _rate;
     this.allLenders = _allLenders;
     this.type = _type;
+    this.agreementAddress = _agreementAddress;
   }
 }
