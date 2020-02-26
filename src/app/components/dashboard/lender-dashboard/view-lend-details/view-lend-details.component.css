@@ -1,0 +1,7 @@
+.table>tbody>tr>td,.table>th{
+    border:0px;
+    }; 
+
+#applicationInfo,#INFO,#lendDetails{
+    float: left;
+}

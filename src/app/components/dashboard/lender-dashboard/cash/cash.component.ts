@@ -12,6 +12,7 @@ export class CashComponent implements OnInit {
   userAddress = "";
   account = {};
   accounts = [];
+  incomes = [];
 
   constructor(private router: Router, 
     private localStorageService : LocalStorageService, 
@@ -36,10 +37,28 @@ export class CashComponent implements OnInit {
       this.router.navigateByUrl('/login');
       return;
     }
-    this.web3Service.getAccounts().then((accs) => {
+    await this.web3Service.getAccounts().then((accs) => {
       this.accounts = accs;
+      console.log("admin account is: ", this.accounts[0]);
     });
 
+    this.getIncome();
+    console.log("this.incomes is:");
+    console.log(this.incomes);
+
+  }
+
+  async getIncome() {
+    let transactions = this.localStorageService.getTransactions();
+    for (let transaction of transactions) {
+      console.log("in getincome, transaction is: ");
+      console.log(transaction);
+      if (transaction.from.address == this.accounts[0].address) {
+        if (transaction.to.address == this.userAddress) {
+          this.incomes.push(transaction);
+        }
+      }
+    }
   }
 }
 
