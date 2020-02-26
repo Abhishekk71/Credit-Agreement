@@ -24,6 +24,26 @@
               <option value="TERM_LOAN">Term Loan</option>
             </select>
 
+            
+            <label *ngIf="type=='REVOLVER'" for="">Maturity Date(Revolver (DD))</label>
+            <input *ngIf="type=='REVOLVER'" type="number" class="form-control" id="" [(ngModel)]="maturityDate" />
+            <label *ngIf="type=='TERM_LOAN'" for="">Maturity Date(Term Loan (YYYY-MM-DD))</label>
+            <input *ngIf="type=='TERM_LOAN'" type="text" class="form-control" id="" [(ngModel)]="maturityDate" />
+
+            <label *ngIf="type=='REVOLVER'" for="">Expiration Date(Revolver (DD))</label>
+            <input *ngIf="type=='REVOLVER'" type="number" class="form-control" id="" [(ngModel)]="expirationDate" />
+            <label *ngIf="type=='TERM_LOAN'" for="">Expiration Date(Term Loan (YYYY-MM-DD))</label>
+            <input *ngIf="type=='TERM_LOAN'" type="text" class="form-control" id="" [(ngModel)]="expirationDate" />
+
+            <label *ngIf="type=='TERM_LOAN'" for="">Schedule Type(Term Loan)</label>
+            <select *ngIf="type=='TERM_LOAN'" class="form-control" id="" [(ngModel)]="scheduleType">
+              <option value="MONTHLY">MONTHLY</option>
+              <option value="QUARTERLY">QUARTERLY</option>
+              <option value="SEMI_ANNUALLY">SEMI ANNUALLY</option>
+              <option value="ANNUALLY">ANNUALLY</option>
+            </select>
+
+
             <label for="">Starting From (YYYY-MM-DD))</label>
             <input type="text" class="form-control" id="" [(ngModel)]="startingDate" />
 
