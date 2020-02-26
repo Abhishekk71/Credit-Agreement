@@ -4,6 +4,7 @@ import { LocalStorageService } from './../../../../services/local-storage.servic
 import { Web3Service } from './../../../../services/web3.service';
 import { SharedService } from './../../../../services/shared.service';
 import {ContractService} from './../../../../services/contract.service';
+import { componentFactoryName } from '@angular/compiler';
 
 const usd_coin_artifacts = require('./../../../../../../build/contracts/USDCoin.json');
 
@@ -18,20 +19,26 @@ export class RepaymentDashboardComponent implements OnInit {
   userAddress = "";
   USDCoin: any;
   accountBalance = 0;
+
   loanApplications = [];
   deployedContracts = [];
+  deployedApplications = [];
+  applications = [];
   contranctToPay = [];
+  repaymentList = [];
+
   Digest_show_hide_val=true;
 
-  testList: [
-    1,2,3,4,5
-  ]
+  repayLender: any;
+  selectedRepayment: any;
+  singleRepayAmount:number;
+  totalRepayAmount = 0;
 
   constructor(private router: Router,
     private localStorageService: LocalStorageService,
     private web3Service: Web3Service,
     private sharedBalance: SharedService,
-    private contractService: ContractService) {
+    private contractService: ContractService,) {
       this.sharedBalance.balanceData.emit(this.accountBalance);
     }
 
@@ -45,14 +52,15 @@ export class RepaymentDashboardComponent implements OnInit {
         this.USDCoin = USDCoinAbstraction;
         console.log(this.USDCoin);
         this.USDCoin.deployed().then(deployed => {
-          console.log(deployed);
+          console.log(deployed); 
           deployed.Transfer({}, (err, ev) => {
             console.log('Transfer event came in, refreshing balance');
             this.getBalance();
           });
         });
       });
-    this.sharedBalance.balanceData.emit(this.accountBalance);  
+    this.sharedBalance.balanceData.emit(this.accountBalance); 
+    this.getRepaymentList();
   }
 
   getUserAddress(){
@@ -63,6 +71,49 @@ export class RepaymentDashboardComponent implements OnInit {
       return;
     }
     this.userAddress = userAddress;
+  }
+
+  async getRepaymentList(){
+    if(this.localStorageService.getLoanApplications()){
+      let loanApplications = this.localStorageService.getLoanApplications();
+      for (let application of loanApplications){
+        if (application.borrower.address == this.userAddress){
+          console.log(application.name);          
+          this.loanApplications.push(application);
+          let contractName = "CreditAgreement";
+          let contractAddress = application.aggreementAddress;
+          var deployedContract;
+          await this.contractService.getDeployedContract(contractName, contractAddress)
+          .then((dContract)=>{
+            deployedContract = dContract;
+            console.log("deployed agreement contract found");
+          });
+          let _contractName = application.name;
+          let _dueAmount = this.getDueAmount(application.address);
+          let _limitation = application.totalLoanAmount;
+          let _dueDate = this.getDueDate(application.address);
+          let _rate = application.rateOfInterest;
+          let _allLenders = application.lenderDetails;
+          let _type = application.type;
+          let rp = new repayment(_contractName,_dueAmount, _limitation, _dueDate,_rate,_allLenders,_type);        
+          this.repaymentList.push(rp);
+        }
+      }
+    }
+    else{
+      alert("cannot find local storage file");
+      this.router.navigateByUrl('/login');
+      return;
+    }
+  }
+
+  getDueAmount(address:any){
+    return 10;
+  }
+
+  getDueDate(address:any){
+    var thisDate = new Date();
+    return thisDate.getDate();
   }
 
   getLoanApplications() {
@@ -94,6 +145,8 @@ export class RepaymentDashboardComponent implements OnInit {
       console.log("deployed agreement contract found");
       console.log(deployedContract);
     });
+    let lenderAddress = this.loanApplications[0].lenderDetails[0].lender.address;
+    await deployedContract.getFacility(lenderAddress, {from: this.userAddress}).then(data => console.log(data));
   }
 
   async sendCoinFromTo(amount:any, fromAddress:any, toAddress:any){
@@ -137,7 +190,6 @@ export class RepaymentDashboardComponent implements OnInit {
   testTransaction(){
     let escrewAddress = this.loanApplications[0].aggreementAddress;
     this.repayTo(escrewAddress,1);
-
   }
 
   Digest_show=function(){
@@ -148,4 +200,31 @@ export class RepaymentDashboardComponent implements OnInit {
     this.router.navigateByUrl("borrower");
   }
 
+  testID($event){
+    console.log($event.target.parentElement.parentElement.id);
+    this.repayLender = document.getElementById($event.target.parentElement.parentElement.id);
+    console.log(this.repayLender);
+    
+  }
+
+}
+
+class repayment {
+  contractName: string;
+  dueAmount: number;
+  limitation: number;
+  dueDate: string;
+  rate: number;
+  allLenders: any;
+  type : string;
+
+  constructor(_contractName,_dueAmount,_limitation,_dueDate,_rate,_allLenders,_type) {
+    this.contractName = _contractName;
+    this.dueAmount = _dueAmount;
+    this.limitation = _limitation;
+    this.dueDate = _dueDate;
+    this.rate = _rate;
+    this.allLenders = _allLenders;
+    this.type = _type;
+  }
 }

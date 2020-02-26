@@ -1,27 +1,4 @@
-<p>
-  repayment-dashboard works!
-</p>
-<hr>
-
-<div class="row">
-  <div fxLayout = "column">
-    <div>
-      <dt>Due Amount: <span id="due-amount">10</span> USD</dt>
-      <progress value="10" max="100"></progress>
-      <div fxLayoutAlign="space-between">
-        <dd>Due Date: <span id="due-date">2020.02.02</span></dd>
-        <dd>Limitation: <span id = "limitation">100</span> USD</dd>
-      </div>          
-    </div>
-    <div>
-      <button width="100">Repay</button>
-      <button width="300">Request</button>
-      <p class="loan-type">Revolver</p>
-    </div>
-  </div>
-</div>
-
-<form action="form-inline" style="width: 500;">
+<!-- <form action="form-inline" style="width: 500;">
   <div >
     <div>
       <dt>Due Amount: <span id="due-amount">10</span> USD</dt>
@@ -32,10 +9,71 @@
       <dd align="right" style="margin-left: auto;">Limitation: <span id = "limitation">100</span> USD</dd>
     </div>
   </div>
-</form>
+</form> -->
+<div class="panel-group" id="accordion">
+  <div id="collapseOne" class="panel-collapse collapse in">
+    <div class="panel-body">
+      <label for="">Pay to:</label>
+        <select class="form-control">
+          <ng-container>
+            <option>lender.address.name</option>
+          </ng-container>
+        </select>
+        <label for="">Amount</label>
+          <input type="number" class="form-control" id="singleRepayAmount" [(ngModel)]="singleRepayAmount" />
+        <label for="">Total Amount: {{totalRepayAmount}}</label>
+        <button>Confirm</button>
+    </div>
+  </div>
+  <div id="collapseTwo" class="panel-collapse collapse in">
+    <div class="panel-body">
+      <label for="">Request</label>
+    </div>
+  </div>
+</div>
+
+<div ng-controllar="emp">
+  <table class="table table-stripped">
+    <thead>
+      <th>ID</th>
+      <th>Contract Name</th>
+      <th>Due Amount</th>
+      <th>Limitation</th>
+      <th>Due Date</th>
+      <th>Rate</th>
+      <th>All Lenders</th>
+      <th>Type</th>
+      <th>Operation</th>
+    </thead>
+    <tbody>
+      <ng-container *ngFor="let repaymentRecord of repaymentList; let i=index">
+        <tr id=tr{{i}}>
+          <td>{{i}}</td>
+          <td>{{repaymentRecord.contractName}}</td>
+          <td>{{repaymentRecord.dueAmount}}</td>
+          <td>{{repaymentRecord.limitation}}</td>
+          <td>{{repaymentRecord.dueDate}}</td>
+          <td>{{repaymentRecord.rate}}</td>
+          <td><li *ngFor="let lenderDetail of repaymentRecord.allLenders" title={{lenderDetail.lender.address}}>{{lenderDetail.lender.name}}</li></td>
+          <td>{{repaymentRecord.type}}</td>
+          <!-- <td>name</td>
+          <td>dueamount</td>
+          <td>limitation</td>
+          <td>duedate</td>
+          <td>rate</td>
+          <td>lenderDetail.lender.name</td>
+          <td>application.type</td> -->
+          <td>
+            <button id=btnRepay{{i}} data-toggle="collapse" data-parent="#accordion" href="#collapseOne" (click)="testID($event)">Repay</button>
+            <button data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Request</button>
+          </td>
+        </tr>
+      </ng-container>
+    </tbody>
+  </table>
+</div>
 
 <button class="btn btn-light" (click)="back()">Back</button>
 <button (click)="testTransaction()"> transfer money</button>
-<button (click)="getDeployedContracts()">GetDeployedContracts</button>
-
-
+<button (click)="getTestDeployedContracts()">GetDeployedContracts</button>
+<button (click)="getRepaymentList()">getRepaymentList</button>

@@ -5,6 +5,9 @@
     <li class="nav-item">
         <a class="nav-link" id="view-tab" data-toggle="tab" href="#view" role="tab" aria-controls="view" aria-selected="false">View</a>
     </li>
+    <li class="nav-item">
+        <a class="nav-link" id="repayment-tab" data-toggle="tab" href="#repayment" role="tab" aria-controls="repayment" aria-selected="false">Repayment</a>
+    </li>
 </ul>
 <div class="tab-content" id="myTabContent">
     <div class="tab-pane fade show active" id="create" role="tabpanel" aria-labelledby="create-tab">
@@ -31,7 +34,6 @@
             <input type="number" class="form-control" id="" [(ngModel)]="rateOfInterest" />
 
             <button class="btn btn-primary" (click)="submit()">Submit</button>
-            <button class="btn btn-primary px-3" [routerLink]="['/borrower-repayment']">Repayment</button>
         </div>
     </div>
     <div class="tab-pane fade" id="view" role="tabpanel" aria-labelledby="view-tab">
@@ -65,5 +67,8 @@
         </tr>
     </tbody>
 </table>
+    </div>
+    <div class="tab-pane fade" id="repayment" role="tabpanel" aria-labelledby="repayment-tab">
+        <app-repayment-dashboard></app-repayment-dashboard>
     </div>
 </div>
