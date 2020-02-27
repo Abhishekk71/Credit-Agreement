@@ -29,12 +29,14 @@ export class RepaymentDashboardComponent implements OnInit {
 
   Digest_show_hide_val=true;
 
+  agrAddr: any;
   repayLender: any;
   repayLenderList: any;
+  facilityAddress: any;
   repayRate = 0;
   selectedRepayment: any;
   singleRepayAmount:number;
-  totalRepayAmount = -1;
+  totalRepayAmount = 0;
 
   constructor(private router: Router,
     private localStorageService: LocalStorageService,
@@ -136,10 +138,9 @@ export class RepaymentDashboardComponent implements OnInit {
     }
   }
 
-  async getDeployedContracts(){//contractName:any, contractAddress:any
+  async getDeployedContracts(contractName:string, contractAddress:any){//contractName:any, contractAddress:any
     console.log(this.loanApplications);
-    let contractName = "CreditAgreement";
-    let contractAddress = this.loanApplications[0].aggreementAddress;
+    // let contractAddress = this.loanApplications[0].aggreementAddress;
     var deployedContract;
     console.log("get deployed contract");
     await this.contractService.getDeployedContract(contractName, contractAddress)
@@ -148,25 +149,7 @@ export class RepaymentDashboardComponent implements OnInit {
       console.log("deployed agreement contract found");
       console.log(deployedContract);
     });
-    let lenderAddress = this.loanApplications[0].lenderDetails[0].lender.address;
-    await deployedContract.getFacility(lenderAddress, {from: this.userAddress}).then(data => console.log(data));
-  }
-
-  async sendCoinFromTo(amount:any, fromAddress:any, toAddress:any){
-    console.log('Sending coins' + amount + ' from ' + fromAddress +' to ' + toAddress);
-    try{
-      const deployedUSDCoin = await this.USDCoin.deployed();
-      const transaction = await deployedUSDCoin.transfer.sendTransaction(toAddress, amount, { from: fromAddress });
-      if (!transaction) {
-        console.log('Transaction failed!');
-      } else {
-        console.log('Transaction complete!');
-        this.getBalance();
-      }
-    } catch (e) {
-      console.log(e);
-      console.log('Error sending coin; see log.');
-    }
+    return(deployedContract);
   }
 
   async getBalance() {
@@ -190,26 +173,108 @@ export class RepaymentDashboardComponent implements OnInit {
     this.sendCoinFromTo(amount, this.userAddress, receiver);
   }
 
-  repay(){
-    return;
-    let amount = this.singleRepayAmount;// + this.singleRepayAmount*this.repayRate/100;
-    console.log(this.repayLender);
-    this.repayTo(this.repayLender,amount);
-    console.log("Repayment Success!");
+  async repay(){
+    let _creditAmount = this.singleRepayAmount;
+    let _interestAmount:number;
+    console.log("interest amount is: ",~~(_creditAmount*this.repayRate));
+    if ( ~~(_creditAmount*this.repayRate/100)>1){
+      _interestAmount=~~(_creditAmount*this.repayRate);
+    }else{
+      _interestAmount = 1;
+    }
+    this.repayTo(this.repayLender, _interestAmount);
+    // this.getFacilityAddress(this.agrAddr, this.repayLender);
+    var deployedContract;
+    await this.contractService.getDeployedContract('CreditAgreement',this.agrAddr)
+      .then(async (_deployedContract) => {
+        deployedContract = _deployedContract;
+        await deployedContract.getFacility(this.repayLender, {from: this.userAddress})
+        .then(async (_facilityAddress) => {
+          let facilityAddress = _facilityAddress;
+          console.log(facilityAddress);
+          this.repayTo(facilityAddress,_creditAmount);
+        });
+        // console.log(facilityAddress);
+        // this.repayTo(facilityAddress,_creditAmount);
+      });
+    // console.log(this.facilityAddress);
     
+    // this.repayTo(this.facilityAddress,_creditAmount);
+    
+    let type:any;
+    for (let loanApplication of this.loanApplications){
+      if (loanApplication.aggreementAddress==this.agrAddr){
+        type = loanApplication.type;
+        break;
+      }
+    }
+    let deployedFacility :any;
+    if (type=="REVOLVER"){
+      deployedFacility = await this.contractService.getDeployedContract("RevolverFacility", this.facilityAddress);
+    }else if (type=="TERMLOAN"){
+      deployedFacility = await this.contractService.getDeployedContract("TermLoanFacility", this.facilityAddress);
+    }else{
+      console.log("No type has found!");
+    }
+    await deployedFacility.createRepayment(this.userAddress, _creditAmount);
+    const _getRepaymentRes = deployedFacility.getRepayment(0);
+    console.log(_getRepaymentRes);
+    console.log("Repayment Success!");
+  }
+
+  // async getFacilityAddress(agreementAddress:any, lenderAddress: any){
+  //   var deployedContract;
+  //   await this.contractService.getDeployedContract('CreditAgreement',agreementAddress)
+  //     .then(async (_deployedContract) => {
+  //       deployedContract = _deployedContract;
+  //       this.facilityAddress = await deployedContract.getFacility(lenderAddress, {from: this.userAddress});
+  //     });
+    // let deployedContract:any;
+    // deployedContract = this.getDeployedContracts("CreditAgreement",agreementAddress);
+    // console.log(deployedContract);
+    // let facilityAddress = deployedContract.getFacility(lenderAddress, {from: this.userAddress});
+    // console.log(facilityAddress);
+    // return(facilityAddress);
+  // }
+
+  async sendCoinFromTo(amount:any, fromAddress:any, toAddress:any){
+    console.log('Sending coins' + amount + ' from ' + fromAddress +' to ' + toAddress);
+    try{
+      const deployedUSDCoin = await this.USDCoin.deployed();
+      const transaction = await deployedUSDCoin.transfer.sendTransaction(toAddress, amount, { from: fromAddress });
+      if (!transaction) {
+        console.log('Transaction failed!');
+      } else {
+        console.log('Transaction complete!');
+        const fromAccount = await this.web3Service.getAccountOf(fromAddress);
+        const toAccount = await this.web3Service.getAccountOf(toAddress);
+        let trans = {
+          time: Date.now(),
+          from: fromAccount,
+          to: toAccount,
+          amount:amount,
+          txHash: transaction.tx,
+        }
+        this.localStorageService.addTransactions(trans);
+        this.getBalance();
+      }
+    } catch (e) {
+      console.log(e);
+      console.log('Error sending coin; see log.');
+    }
   }
 
   Digest_show=function(){
       this.Digest_show_hide_val=!this.Digest_show_hide_val;
   }
 
-  testID($event){
+  parseAgreement($event){
     console.log($event.target.parentElement.parentElement.id);
-    let agrAddr = $event.target.parentElement.parentElement.id
+    this.agrAddr = $event.target.parentElement.parentElement.id
     if(this.localStorageService.getLoanApplications()){
       let loanApplications = this.localStorageService.getLoanApplications();
       for (let application of loanApplications){
-        if (application.aggreementAddress == agrAddr){
+        if (application.aggreementAddress == this.agrAddr){
           this.repayLenderList = application.lenderDetails;
           this.repayRate = application.rateOfInterest;
         }
@@ -219,7 +284,13 @@ export class RepaymentDashboardComponent implements OnInit {
   }
 
   calculateTotalAmount(){
-    this.totalRepayAmount = this.singleRepayAmount+this.repayRate;
+    let _interestAmount:number;
+    if ( ~~(this.singleRepayAmount*this.repayRate/100)>1){
+      _interestAmount=~~(this.singleRepayAmount*this.repayRate);
+    }else{
+      _interestAmount = 1;
+    }
+    this.totalRepayAmount = this.singleRepayAmount+_interestAmount;
   }
 }
 

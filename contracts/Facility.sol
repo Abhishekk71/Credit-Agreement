@@ -41,6 +41,7 @@ contract Facility {
         amount = _amount;
         // usdcoinInstance = USDCoin(_usdcoinAddress);
         balance = 0;
+        repaymentID = 0;
         paymentID = 0;
         fee = _fee;
         maturityDate = _maturityDate;
@@ -61,7 +62,7 @@ contract Facility {
     }
 
     function createRepayment(address _borrower, uint _value) public onlyOwner{
-        repayments[now] = Repayment(_borrower, _value, false);
+        repayments[repaymentID] = Repayment(_borrower, _value, false);
         repaymentID+=1;
         // _borrower.transfer(address(this), _value);????
         // emit PaymentCreation(_orderId, _customer, _value);
@@ -78,8 +79,8 @@ contract Facility {
     function createPayment(address _borrower, uint _value) public{
         require(msg.sender == _borrower);
         require(_value <= balance);
-        paymentID += 1;
         payments[paymentID] = Payment(_borrower, _value);
+        paymentID += 1;
     }
 
     function getPayment(uint _id) public view returns(address, uint){
