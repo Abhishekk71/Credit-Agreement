@@ -31,14 +31,35 @@ export class ContractService {
     });
   }
 
-  async deployFacilityContract(_amount, _fee, _maturityDate, _expiryDate, _from) {
+  async deployRevolverFacility(_amount, _fee, _maturityDate, _expiryDate, _from) {
     return new Promise(async (resolve, reject) => {
       try {
         console.log("enter contract.service.ts");
-        let contractArtifacts = require(`./../../../build/contracts/Facility.json`);
+        let contractArtifacts = require(`./../../../build/contracts/RevolverFacility.json`);
         let _contract = contract(contractArtifacts);
         _contract.setProvider(this.web3Service.getWeb3().currentProvider);
         await _contract.new(_amount, _fee, _maturityDate, _expiryDate, { from: _from})
+          .then((deployedFacilityContract) => {
+            resolve(deployedFacilityContract);
+            console.log("deployedAgreementContract is:");
+            console.log(deployedFacilityContract);
+          }).catch((e) => {
+            throw e;
+          });
+      } catch (e) {
+        reject(e);
+      }
+    });
+  }
+
+  async deployTermLoanFacility(_amount, _fee, _maturityDate, _expiryDate,_amortizationSchedule,_closingDate, _from) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        console.log("enter contract.service.ts");
+        let contractArtifacts = require(`./../../../build/contracts/TermLoanFacility.json`);
+        let _contract = contract(contractArtifacts);
+        _contract.setProvider(this.web3Service.getWeb3().currentProvider);
+        await _contract.new(_amount, _fee, _maturityDate, _expiryDate,_amortizationSchedule,_closingDate, { from: _from})
           .then((deployedFacilityContract) => {
             resolve(deployedFacilityContract);
             console.log("deployedAgreementContract is:");

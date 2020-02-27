@@ -17,7 +17,11 @@ export class BorrowerDashboardComponent implements OnInit {
   term = 0;
   rateOfInterest = 0;
   loanApplications = [];
-  startingDate=0;
+  startingDate = 0;
+  maturityDate = 0;
+  expirationDate = 0;
+  scheduleType = "";
+
 
   constructor(private router: Router,
     private localStorageService: LocalStorageService, ) { }
@@ -50,17 +54,19 @@ export class BorrowerDashboardComponent implements OnInit {
       term: this.term,
       rateOfInterest: this.rateOfInterest,
       startingDate: this.startingDate,
-      endingDate:0,
+      endingDate: 0,
+      maturityDate: this.maturityDate,
+      expirationDate: this.expirationDate,
+      scheduleType:this.scheduleType,
     }
-    var str = this.startingDate + " 00:00:00";
-    console.log(str);
-    var date = new Date(str);
-    var time = date.getTime();
-    
-    loanApplication.startingDate = time;
-
-    date.setDate(date.getFullYear() + this.term);
-    loanApplication.endingDate = date.getTime();
+   
+    console.log("out maturmaturityDate: ", this.maturityDate);
+    loanApplication.startingDate = this.getTime("",this.startingDate);
+    loanApplication.endingDate = this.setTime(this.startingDate);
+    if (this.type == "TERM_LOAN") {
+      loanApplication.maturityDate = this.getTime("",this.maturityDate);
+      loanApplication.expirationDate = this.getTime("",this.expirationDate);
+    }
     this.localStorageService.addLoanApplication(loanApplication);
 
     alert("Your application was successfully submitted");
@@ -71,6 +77,23 @@ export class BorrowerDashboardComponent implements OnInit {
     this.term = 0;
     this.rateOfInterest = 0;
     this.startingDate = 0;
+    this.maturityDate = 0;
+    this.expirationDate = 0;
+    this.scheduleType = "";
+  }
+
+  getTime(_,year) {
+    var str = year + _ + " 00:00:00";
+    console.log("in getTime: ", str);
+    var date = new Date(str);
+    return date.getTime();
+  }
+
+  setTime(_) {
+    var str = _ + " 00:00:00";
+    var date = new Date(str);
+    date.setDate(date.getFullYear() + this.term);
+    return date.getTime();
   }
   
 
