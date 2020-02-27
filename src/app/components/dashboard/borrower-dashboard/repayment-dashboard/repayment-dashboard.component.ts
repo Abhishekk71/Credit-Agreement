@@ -34,7 +34,7 @@ export class RepaymentDashboardComponent implements OnInit {
   repayRate = 0;
   selectedRepayment: any;
   singleRepayAmount:number;
-  totalRepayAmount = 0;
+  totalRepayAmount = -1;
 
   constructor(private router: Router,
     private localStorageService: LocalStorageService,
@@ -188,30 +188,19 @@ export class RepaymentDashboardComponent implements OnInit {
   async repayTo(receiver, amount){
     console.log('Sending coins' + amount + ' from ' + this.userAddress +' to ' + receiver);
     this.sendCoinFromTo(amount, this.userAddress, receiver);
-    console.log("Transaction Success!");
-    
   }
 
   repay(){
+    return;
     let amount = this.singleRepayAmount;// + this.singleRepayAmount*this.repayRate/100;
     console.log(this.repayLender);
-    
     this.repayTo(this.repayLender,amount);
     console.log("Repayment Success!");
     
   }
 
-  testTransaction(){
-    let escrewAddress = this.loanApplications[0].aggreementAddress;
-    this.repayTo(escrewAddress,1);
-  }
-
   Digest_show=function(){
       this.Digest_show_hide_val=!this.Digest_show_hide_val;
-  }
-
-  back(){
-    this.router.navigateByUrl("borrower");
   }
 
   testID($event){
@@ -227,9 +216,11 @@ export class RepaymentDashboardComponent implements OnInit {
       }
     }
     console.log(this.repayLenderList);
-    
   }
 
+  calculateTotalAmount(){
+    this.totalRepayAmount = this.singleRepayAmount+this.repayRate;
+  }
 }
 
 class repayment {

@@ -20,7 +20,7 @@
           </ng-container>
         </select>
         <label for="">Amount</label>
-        <input type="number" class="form-control" id="singleRepayAmount" [(ngModel)]="singleRepayAmount" />
+        <input type="number" class="form-control" id="singleRepayAmount" [(ngModel)]="singleRepayAmount" (change)="calculateTotalAmount()"/>
         <label for="">Total Amount: {{totalRepayAmount}} USDCoin</label>
         <button (click)="repay()">Confirm</button>
     </div>
@@ -74,8 +74,3 @@
     </tbody>
   </table>
 </div>
-
-<button class="btn btn-light" (click)="back()">Back</button>
-<button (click)="testTransaction()"> transfer money</button>
-<button (click)="getTestDeployedContracts()">GetDeployedContracts</button>
-<button (click)="getRepaymentList()">getRepaymentList</button>
