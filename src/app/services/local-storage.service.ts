@@ -63,6 +63,16 @@ export class LocalStorageService {
     console.log(transactions);
   }
 
-
+  updateTransactions(transaction) {
+    //console.log(application);
+    let transactions = this.getLoanApplications();
+    for (let i = 0; i < transactions.length; i++) {
+      if (transactions[i].txHash == transaction.txHash) {
+        transactions[i] = transaction;
+      }
+    }
+    //console.log(loanApplications);
+    localStorage.setItem("loanApplications", JSON.stringify(transactions));
+  }
 
 }

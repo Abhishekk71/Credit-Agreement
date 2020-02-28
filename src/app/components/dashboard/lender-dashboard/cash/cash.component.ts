@@ -13,6 +13,7 @@ export class CashComponent implements OnInit {
   account = {};
   accounts = [];
   incomes = [];
+  outcomes = [];
 
   constructor(private router: Router, 
     private localStorageService : LocalStorageService, 
@@ -42,23 +43,22 @@ export class CashComponent implements OnInit {
       console.log("admin account is: ", this.accounts[0]);
     });
 
-    this.getIncome();
-    console.log("this.incomes is:");
-    console.log(this.incomes);
+    this.getTransations();
 
   }
 
-  async getIncome() {
+  async getTransations() {
     let transactions = this.localStorageService.getTransactions();
     for (let transaction of transactions) {
-      console.log("in getincome, transaction is: ");
-      console.log(transaction);
-      if (transaction.from.address == this.accounts[0].address) {
-        if (transaction.to.address == this.userAddress) {
+      if (transaction.to.address == this.userAddress && transaction.type!="FACILITY") {
           this.incomes.push(transaction);
-        }
       }
+      if (transaction.from.address == this.userAddress) {
+          this.outcomes.push(transaction);
+      }
+
     }
   }
+
 }
 

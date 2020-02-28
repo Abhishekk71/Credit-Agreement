@@ -28,8 +28,8 @@
   <div id="collapseTwo" class="panel-collapse collapse in">
     <div class="panel-body">
       <label for="">Amount</label>
-      <input type="number" class="form-control" id="requestAmount"/>
-      <button>Request</button>
+      <input type="number" class="form-control" id="requestAmount" [(ngModel)]="requestAmount"/>
+      <button (click)="request()">Request</button>
     </div>
   </div>
 </div>
@@ -67,7 +67,7 @@
           <td>application.type</td> -->
           <td>
             <button id=btnRepay{{i}} data-toggle="collapse" data-parent="#accordion" href="#collapseOne" (click)="parseAgreement($event)">Repay</button>
-            <button data-toggle="collapse" data-parent="#accordion" href="#collapseTwo">Request</button>
+            <button id=btnRequest{{i}} data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" (click)="parseAgreement($event)">Request</button>
           </td>
         </tr>
       </ng-container>

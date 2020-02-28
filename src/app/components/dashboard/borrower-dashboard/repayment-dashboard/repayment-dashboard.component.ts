@@ -37,6 +37,8 @@ export class RepaymentDashboardComponent implements OnInit {
   selectedRepayment: any;
   singleRepayAmount:number;
   totalRepayAmount = 0;
+  requestAmount: number;
+  owner: any;
 
   constructor(private router: Router,
     private localStorageService: LocalStorageService,
@@ -65,6 +67,10 @@ export class RepaymentDashboardComponent implements OnInit {
       });
     this.sharedBalance.balanceData.emit(this.accountBalance); 
     this.getRepaymentList();
+    await this.web3Service.getAccounts().then((accs) => {
+      var accounts = accs;
+      this.owner=accounts[0];
+    });
   }
 
   getUserAddress(){
@@ -168,9 +174,9 @@ export class RepaymentDashboardComponent implements OnInit {
     }
   }
 
-  async repayTo(receiver, amount){
+  async repayTo(receiver, amount,facilityLender,agreementAddress){
     console.log('Sending coins' + amount + ' from ' + this.userAddress +' to ' + receiver);
-    this.sendCoinFromTo(amount, this.userAddress, receiver);
+    this.sendCoinFromTo(amount, this.userAddress, receiver,facilityLender,agreementAddress);
   }
 
   async repay(){
@@ -182,24 +188,20 @@ export class RepaymentDashboardComponent implements OnInit {
     }else{
       _interestAmount = 1;
     }
-    this.repayTo(this.repayLender, _interestAmount);
-    // this.getFacilityAddress(this.agrAddr, this.repayLender);
+    
     var deployedContract;
     await this.contractService.getDeployedContract('CreditAgreement',this.agrAddr)
       .then(async (_deployedContract) => {
         deployedContract = _deployedContract;
         await deployedContract.getFacility(this.repayLender, {from: this.userAddress})
-        .then(async (_facilityAddress) => {
-          let facilityAddress = _facilityAddress;
-          console.log(facilityAddress);
-          this.repayTo(facilityAddress,_creditAmount);
-        });
-        // console.log(facilityAddress);
-        // this.repayTo(facilityAddress,_creditAmount);
+          .then(async (_facilityAddress) => {
+            this.repayTo(this.repayLender, _interestAmount,null,deployedContract.address);
+            this.facilityAddress = _facilityAddress;
+            console.log("facilityAddress is:");
+            console.log(this.facilityAddress);
+            this.repayTo(this.facilityAddress,_creditAmount,this.repayLender,deployedContract.address);
+          });
       });
-    // console.log(this.facilityAddress);
-    
-    // this.repayTo(this.facilityAddress,_creditAmount);
     
     let type:any;
     for (let loanApplication of this.loanApplications){
@@ -211,33 +213,35 @@ export class RepaymentDashboardComponent implements OnInit {
     let deployedFacility :any;
     if (type=="REVOLVER"){
       deployedFacility = await this.contractService.getDeployedContract("RevolverFacility", this.facilityAddress);
-    }else if (type=="TERMLOAN"){
+    }else if (type=="TERM_LOAN"){
       deployedFacility = await this.contractService.getDeployedContract("TermLoanFacility", this.facilityAddress);
     }else{
       console.log("No type has found!");
     }
-    await deployedFacility.createRepayment(this.userAddress, _creditAmount);
+    await deployedFacility.createRepayment(this.userAddress, _creditAmount, { from:this.owner.address });
     const _getRepaymentRes = deployedFacility.getRepayment(0);
     console.log(_getRepaymentRes);
     console.log("Repayment Success!");
   }
 
-  // async getFacilityAddress(agreementAddress:any, lenderAddress: any){
-  //   var deployedContract;
-  //   await this.contractService.getDeployedContract('CreditAgreement',agreementAddress)
-  //     .then(async (_deployedContract) => {
-  //       deployedContract = _deployedContract;
-  //       this.facilityAddress = await deployedContract.getFacility(lenderAddress, {from: this.userAddress});
-  //     });
-    // let deployedContract:any;
-    // deployedContract = this.getDeployedContracts("CreditAgreement",agreementAddress);
-    // console.log(deployedContract);
-    // let facilityAddress = deployedContract.getFacility(lenderAddress, {from: this.userAddress});
-    // console.log(facilityAddress);
-    // return(facilityAddress);
-  // }
+  async request() {
+    //we should first define the request rule. need to decide which facility should send coin for this request.
+    var deployedContract;
+    this.requestAmount;
+    await this.contractService.getDeployedContract('CreditAgreement',this.agrAddr)
+      .then(async (_deployedContract) => {
+        deployedContract = _deployedContract;
+        await deployedContract.getFacility(this.repayLender, {from: this.userAddress})
+          .then(async (_facilityAddress) => {
+            this.facilityAddress = _facilityAddress;
+            console.log("facilityAddress is:");
+            console.log(this.facilityAddress);
+            this.repayTo(_facilityAddress, this.requestAmount,null,deployedContract.address);
+          });
+      });
+  }
 
-  async sendCoinFromTo(amount:any, fromAddress:any, toAddress:any){
+  async sendCoinFromTo(amount: any, fromAddress: any, toAddress: any, facilityLender: any, agreementAddress: any) {
     console.log('Sending coins' + amount + ' from ' + fromAddress +' to ' + toAddress);
     try{
       const deployedUSDCoin = await this.USDCoin.deployed();
@@ -246,14 +250,21 @@ export class RepaymentDashboardComponent implements OnInit {
         console.log('Transaction failed!');
       } else {
         console.log('Transaction complete!');
+        var type = "";
         const fromAccount = await this.web3Service.getAccountOf(fromAddress);
-        const toAccount = await this.web3Service.getAccountOf(toAddress);
+        var toAccount = await this.web3Service.getAccountOf(toAddress);
+        if (toAccount == null) {
+          toAccount = await this.web3Service.getAccountOf(facilityLender);
+          type = "FACILITY";
+        }
         let trans = {
           time: Date.now(),
           from: fromAccount,
           to: toAccount,
           amount:amount,
           txHash: transaction.tx,
+          agreementAddress: agreementAddress,
+          type: type,
         }
         this.localStorageService.addTransactions(trans);
         this.getBalance();
@@ -268,9 +279,10 @@ export class RepaymentDashboardComponent implements OnInit {
       this.Digest_show_hide_val=!this.Digest_show_hide_val;
   }
 
-  parseAgreement($event){
+  parseAgreement($event) {
+    console.log("parseAgreement:");
     console.log($event.target.parentElement.parentElement.id);
-    this.agrAddr = $event.target.parentElement.parentElement.id
+    this.agrAddr = $event.target.parentElement.parentElement.id;
     if(this.localStorageService.getLoanApplications()){
       let loanApplications = this.localStorageService.getLoanApplications();
       for (let application of loanApplications){

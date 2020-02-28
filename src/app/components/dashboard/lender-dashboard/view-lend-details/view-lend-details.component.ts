@@ -215,7 +215,7 @@ export class ViewLendDetailsComponent implements OnInit {
             }
             await deployedAgreementContract.addFacility(deployedFacilityContract["address"], detail.lender["address"], { from: this.accounts[0].address });
             detail.detailStatus = "SIGNED";
-            await this.sendCoinFromTo(detail.amount, this.userAddress, this.application.borrower.address);
+            await this.sendCoinFromTo(detail.amount, this.userAddress, deployedFacilityContract["address"],deployedAgreementContract.address);
             console.log("send ok!");
           }
         }
@@ -269,7 +269,7 @@ export class ViewLendDetailsComponent implements OnInit {
     this.localStorageService.updateLoanApplication(this.application);
   }
 
-  async sendCoinFromTo(amount:any, fromAddress:any, toAddress:any){
+  async sendCoinFromTo(amount:any, fromAddress:any, toAddress:any,AgreementAddress:any){
     console.log('Sending coins' + amount + ' from ' + fromAddress +' to ' + toAddress);
     try{
       const deployedUSDCoin = await this.USDCoin.deployed();
@@ -278,6 +278,21 @@ export class ViewLendDetailsComponent implements OnInit {
         console.log('Transaction failed!');
       } else {
         console.log('Transaction complete!');
+        const fromAccount = await this.web3Service.getAccountOf(fromAddress);
+        var toAccount = await this.web3Service.getAccountOf(toAddress);
+        if (toAccount == null) {
+          toAccount = this.application.borrower;
+        }
+        let trans = {
+          time: Date.now(),
+          from: fromAccount,
+          to: toAccount,
+          amount:amount,
+          txHash: transaction.tx,
+          agreementAddress: AgreementAddress,
+          type:"FACILITY",
+        }
+        this.localStorageService.addTransactions(trans);
         this.getBalance();
         console.log("console this is:");
         console.log(transaction);
