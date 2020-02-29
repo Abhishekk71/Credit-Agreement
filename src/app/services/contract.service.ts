@@ -1,10 +1,6 @@
 import { Injectable } from '@angular/core';
 import { Web3Service } from './web3.service';
-<<<<<<< HEAD
-const contract = require('truffle-contract');
-=======
 import contract from 'truffle-contract';
->>>>>>> 048c0d6d755c4ca3df655f9c75cd04721fa2f465
 
 @Injectable({
   providedIn: 'root'
@@ -13,8 +9,6 @@ export class ContractService {
 
   constructor(private web3Service: Web3Service) { }
 
-<<<<<<< HEAD
-=======
   async deployAgreementContract(_application, _lenders, _lenderShares, _from) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -79,7 +73,6 @@ export class ContractService {
     });
   }
 
->>>>>>> 048c0d6d755c4ca3df655f9c75cd04721fa2f465
   async getDeployedContract(contractName, contractAddress) {
     return new Promise(async (resolve, reject) => {
       try {
@@ -96,9 +89,6 @@ export class ContractService {
       }
     });
   }
-<<<<<<< HEAD
-=======
 
 
->>>>>>> 048c0d6d755c4ca3df655f9c75cd04721fa2f465
 }

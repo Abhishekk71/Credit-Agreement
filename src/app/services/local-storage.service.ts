@@ -9,21 +9,12 @@ export class LocalStorageService {
     if (localStorage.getItem("user") == null) {
       localStorage.setItem("user", "");
     }
-<<<<<<< HEAD
-    if (localStorage.getItem("application") == null) {
-      localStorage.setItem("application", "{}");
-    }
-    if (localStorage.getItem("loanApplications") == null) {
-      localStorage.setItem("loanApplications", "[]");
-    }
-=======
     if (localStorage.getItem("loanApplications") == null) {
       localStorage.setItem("loanApplications", "[]");
     }
     if (localStorage.getItem("transactions") == null) {
       localStorage.setItem("transactions", "[]");
     }
->>>>>>> 048c0d6d755c4ca3df655f9c75cd04721fa2f465
   }
 
   setUser(user) {
@@ -50,42 +41,13 @@ export class LocalStorageService {
   }
 
   updateLoanApplication(application) {
-<<<<<<< HEAD
-    console.log(application);
-=======
     //console.log(application);
->>>>>>> 048c0d6d755c4ca3df655f9c75cd04721fa2f465
     let loanApplications = this.getLoanApplications();
     for (let i = 0; i < loanApplications.length; i++) {
       if (loanApplications[i].id == application.id) {
         loanApplications[i] = application;
       }
     }
-<<<<<<< HEAD
-    console.log(loanApplications);
-    localStorage.setItem("loanApplications", JSON.stringify(loanApplications));
-  }
-
-  setApplication(application) {
-    localStorage.setItem("application", JSON.stringify(application));
-  }
-
-  getApplication() {
-    return JSON.parse(localStorage.getItem("application"));
-  }
-
-  // getLendDetails(){
-  //   return JSON.parse(localStorage.getItem("lendDetails"));
-  // }
-
-  // addLendDetail(lendDetail){
-  //   let lendDetails = this.getLendDetails();
-  //   lendDetails.push(lendDetail);
-  //   localStorage.setItem("lendDetails", JSON.stringify(lendDetails));
-  //   console.log("in addLendDetail, lendDetails is: ");
-  //   console.log(lendDetails);
-  // }
-=======
     //console.log(loanApplications);
     localStorage.setItem("loanApplications", JSON.stringify(loanApplications));
   }
@@ -113,5 +75,4 @@ export class LocalStorageService {
     localStorage.setItem("loanApplications", JSON.stringify(transactions));
   }
 
->>>>>>> 048c0d6d755c4ca3df655f9c75cd04721fa2f465
 }
