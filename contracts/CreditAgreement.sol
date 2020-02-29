@@ -33,7 +33,7 @@ contract CreditAgreement {
         intrestMax = _intrestMax;
         intrestMin = _intrestMin;
         for(uint i = 0; i < lenders.length; i++) {
-            lenders.push(Lender({lender: _lenders[i], share: _lenderShares[i],intrestMin, hasSigned: false}));
+            lenders.push(Lender({lender: _lenders[i], share: _lenderShares[i],interest: intrestMin, hasSigned: false}));
         }
         amount = _amount;
         closingDate = _closingDate;
