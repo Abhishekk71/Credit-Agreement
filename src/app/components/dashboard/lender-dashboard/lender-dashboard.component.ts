@@ -48,65 +48,18 @@ export class LenderDashboardComponent implements OnInit {
     
   }
 
-  async lendAllLoanApplication(application) {
-    //first check the status
-    if (application["status"] == "LendCompleted"){
-      alert("This application get enough lend. You cannot lend more.")
-      return;
+  canSign(application) {
+    if (application.status != "Pending") {
+      return false;
     }
-
-    //if the application has lend detail record, click this button only can lend the rest amount
-    let currentAmount=this.calculateAmount(application);
-    let lendDetail = {
-      ID: Date.now(),
-      lender:await this.web3Service.getAccountOf(this.userAddress),
-      amount: application.totalLoanAmount - currentAmount,
-      detailStatus:"",
-    }
-    application["status"] = "LendCompleted";
-    application["lenderDetails"].push(lendDetail);
-    this.localStorageService.updateLoanApplication(application);
-    alert("Lend successfully. This application got enough money.");
-
-    this.refresh();
-  }
-
-  lendPartLoanApplication(application) {
-    //first check the status
-    if (application["status"] == "LendCompleted"){
-      alert("This application get enough lend. You cannot lend more.")
-      return;
-    }
-
-    this.localStorageService.setUser(this.userAddress);
-    this.localStorageService.setApplication(application);
-  }
-
-  //calculate the exsiting lend detail records
-  calculateAmount(application){
-    let sum=0;
-    if(application.lenderDetails){
-      for(let lendDetail of application.lenderDetails){
-        sum = sum + lendDetail.amount;
+    let details = application["lenderDetails"];
+    for(let detail of details){
+      if(detail.lender["address"]==this.userAddress){
+        return true;
       }
     }
-    return sum;
+    return  false;
   }
-
-  view(application){
-    this.localStorageService.setUser(this.userAddress);
-    this.localStorageService.setApplication(application);
-  }
-
-//   openDialog() {
-
-//     const dialogConfig = new MatDialogConfig();
-
-//     dialogConfig.disableClose = true;
-//     dialogConfig.autoFocus = true;
-
-//     this.dialog.open(ViewLendDetailsComponent, dialogConfig);
-// }
-
+  
 
 }

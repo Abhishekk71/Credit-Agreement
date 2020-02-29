@@ -1,0 +1,118 @@
+<div>
+    <div>Welcome
+        <b *ngIf="account">{{account.name}}</b>
+        <br> You have <span id="balance">{{accountBalance}}</span> USD
+        <button class="btn btn-sm btn-danger float-right" (click)="logout()">Logout</button>
+    </div>
+</div>
+<hr>
+
+
+<div>
+Application Information
+</div>
+<div *ngIf="application.type=='REVOLVER'">
+  <table class="table table-stripped">
+    <thead>
+      <th>Name</th>
+      <th>Borrwer</th>
+      <th>Lend Amount</th>
+      <th>Total Amount</th>
+      <th>Term</th>
+      <th>Rate of Interest</th>
+      <th>All Lenders</th>
+      <th>Starting Date</th>
+      <th>Ending Date</th>
+      <th>Maturity Date (every month)</th>
+      <th>Expiration Date (every month)</th>
+      <th>Limitation</th>
+      <th>Amount need to pay by Borrwer</th>
+    </thead>
+    <tbody>
+      <td>{{application.name}}</td>
+      <td>{{application.borrower.name}}</td>
+      <td>sum(application)</td>
+      <td>{{application.totalLoanAmount}}</td>
+      <td>{{application.term}}</td>
+      <td>{{application.rateOfInterest}}</td>
+      <th >
+        <li *ngFor="let lenderDetail of application.lenderDetails">{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}   {{lenderDetail.lender.name}}</li>
+      </th>
+      <td>starting date</td>
+      <td>ending date</td>
+      <td>Maturity date</td>
+      <td>expiration date</td>
+      <td>limitaion</td>
+      <td>amount</td>
+    </tbody>
+  </table>
+</div>
+
+<div *ngIf="application.type=='TERM_LOAN'">
+  <table class="table table-stripped">
+    <thead>
+      <th>Name</th>
+      <th>Borrwer</th>
+      <th>Lend Amount</th>
+      <th>Total Amount</th>
+      <th>Term</th>
+      <th>Rate of Interest</th>
+      <th>All Lenders</th>
+      <th>Starting Date</th>
+      <th>Expiration Date</th>
+      <th>Maturity Date</th>
+      <th>Usage</th>
+      <th>Repayment Schedule Type</th>
+      <th>Amount to pay (every term)</th>
+    </thead>
+    <tbody>
+      <td>{{application.name}}</td>
+      <td>{{application.borrower.name}}</td>
+      <td>sum(application)</td>
+      <td>{{application.totalLoanAmount}}</td>
+      <td>{{application.term}}</td>
+      <td>{{application.rateOfInterest}}</td>
+      <th>
+        <li *ngFor="let lenderDetail of application.lenderDetails">{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}   {{lenderDetail.lender.name}}</li>
+      </th>
+      <td>starting date</td>
+      <td>expiration date</td>
+      <td>maturity date</td>
+      <td>expiration date</td>
+      <td>type</td>
+      <td>amount</td>
+    </tbody>
+  </table>
+</div>
+
+<hr>
+
+<div>
+Repayment History
+</div>
+
+<table class="table table-stripped">
+    <thead>
+        <th>Repay Date</th>
+        <th>Repay Amount</th>
+        <th>From</th>
+        <th>Contract</th>
+    </thead>
+    <tbody>
+      <!--<ng-container >
+        <tr *ngFor="">
+          <td></td>
+          <td></td>
+          <td></td>
+        </tr>
+      </ng-container>-->
+      
+    </tbody>
+</table>
+<!--<table *ngIf="application.lenderDetails.length==0">
+  <tr>
+    No Details
+  </tr>
+</table>-->
+
+<button class="btn btn-light" (click)="back()">Back</button>

@@ -1,33 +1,62 @@
-<table class="table table-stripped">
-    <thead>
-        <th>Name</th>
-        <th>Applicant</th>
-        <th>Total Amount Requested</th>
-        <th>Type</th>
-        <th>Term</th>
-        <th>Rate of Interest</th>
-        <th>Lenders</th>
-        <th>Actions</th>
-    </thead>
-    <tbody>
-        <tr *ngFor="let application of loanApplications">
-            <ng-container *ngIf="application.status && application.status!= 'REJECTED'">
-                <td>{{application.name}}</td>
-                <td>{{application.borrower.name}}</td>
-                <td>{{application.totalLoanAmount}}</td>
-                <td>{{application.type}}</td>
-                <td>{{application.term}}</td>
-                <td>{{application.rateOfInterest}}</td>
-                <th scope="row">
-                  <li *ngFor="let lenderDetail of application.lenderDetails">{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}   {{lenderDetail.lender.name}}</li>
-                </th>
-                <td>
-                    <button class="btn btn-sm btn-primary m-1" (click)="lendAllLoanApplication(application)">Lend All</button>
-                    <button class="btn btn-sm btn-danger m-1" (click)="lendPartLoanApplication(application)" [routerLink]="['/lend', application.id]">Lend Part of Application</button>
-                    <button class="btn btn-light m-1" (click)="view(application)" [routerLink]="['/view', application.id]">View Lend Details</button>
-                    <!--<button class="btn btn-sm btn-primary m-1" (click)="open()">Test</button>-->
-                </td>
-            </ng-container>
-        </tr>
-    </tbody>
-</table>
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="application-tab" data-toggle="tab" href="#application" role="tab" aria-controls="application" aria-selected="true">Application</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="contract-tab" data-toggle="tab" href="#contract" role="tab" aria-controls="contract" aria-selected="false">Contract</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="cash-tab" data-toggle="tab" href="#cash" role="tab" aria-controls="cash" aria-selected="false">Cash Flow</a>
+    </li>
+</ul>
+
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade show active" id="application" role="tabpanel" aria-labelledby="application-tab">
+        <table class="table table-stripped">
+            <thead>
+                <th>Name</th>
+                <th>Applicant</th>
+                <th>Total Amount Requested</th>
+                <th>Type</th>
+                <th>Term</th>
+                <th>Rate of Interest</th>
+                <th>Lenders</th>
+                <th>Covered Amount</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let application of loanApplications">
+                    <ng-container *ngIf="application.status && application.status!= 'REJECTED'">
+                        <td>{{application.name}}</td>
+                        <td>{{application.borrower.name}}</td>
+                        <td>{{application.totalLoanAmount}}</td>
+                        <td>{{application.type}}</td>
+                        <td>{{application.term}}</td>
+                        <td>{{application.rateOfInterest}}</td>
+                        <th scope="row">
+                            <li *ngFor="let lenderDetail of application.lenderDetails">{{lenderDetail.ID | date:'MM-dd'}}   {{lenderDetail.lender.name}}</li>
+                        </th>
+                        <td><a [routerLink]="['/view', application.id]">{{application.coveredAmount}}</a>/{{application.totalLoanAmount}}</td>
+                        <td>{{application.status}}</td>
+                        <td>
+                            <button class="btn btn-sm btn-danger m-1" (click)="mark(application)">Invalid</button>
+                            <button *ngIf="application.coveredAmount != application.totalLoanAmount" class="btn btn-sm btn-primary m-1"  [routerLink]="['/view', application.id]">Lend</button>
+                            <button *ngIf="application.coveredAmount == application.totalLoanAmount && canSign(application)" class="btn btn-sm btn-primary m-1"  [routerLink]="['/view', application.id]">Sign</button>
+                            <!--<button class="btn btn-light m-1"  [routerLink]="['/view', application.id]">View Lend Details</button>
+                            <button class="btn btn-sm btn-primary m-1" (click)="open()">Test</button>-->
+                        </td>
+                    </ng-container>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+    <div class="tab-pane fade" id="contract" role="tabpanel" aria-labelledby="contract-tab">
+        <app-lender-contracts></app-lender-contracts>
+    </div>
+    <div class="tab-pane fade" id="cash" role="tabpanel" aria-labelledby="cash-tab">
+        <app-cash></app-cash>
+    </div>
+</div>
+
+    

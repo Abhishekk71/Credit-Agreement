@@ -61,8 +61,12 @@ contract CreditAgreement {
         _;
     }
 
-    function addFacility(address facilityAddress) public onlyOwner {
-        facilities.push(Facility(facilityAddress));
+    function addFacility(address facilityAddress, address lender) public {
+        facilities[lender] = facilityAddress;
+    }
+
+    function getFacility(address lender) public view returns(address){
+        return facilities[lender];
     }
 
     function signAsABorrower() public onlyBorrower {
@@ -71,18 +75,28 @@ contract CreditAgreement {
             agreementDate = now;
         }
     }
-    
 
-    function signAsALender() public returns(bool){
-    //function signAsALender() public oblyBorrower {
+    //function signAsALender() public returns(bool){
+    function signAsALender() public onlyLender returns(bool) {
         for(uint i = 0; i < lenders.length; i++) {
             if(msg.sender == lenders[i].lender) {
                 lenders[i].hasSigned = true;
                 if(hasEveryoneSigned() == true) {
                     agreementDate = now;
+                    return true;
                 }
             }
         }
+        return false;
+    }
+
+    function check() public view returns(bool) {
+        for(uint i = 0; i < lenders.length; i++) {
+            if(msg.sender == lenders[i].lender) {
+                return lenders[i].hasSigned;
+            }
+        }
+        return false;
     }
 
     function hasEveryoneSigned() public view returns(bool) {

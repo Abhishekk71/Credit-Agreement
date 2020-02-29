@@ -1,4 +1,4 @@
-<div>
+<div class="container-fluid">
     <div>Welcome
         <b *ngIf="account">{{account.name}}</b>
         <br> You have <span id="balance">{{accountBalance}}</span> USD
@@ -8,58 +8,75 @@
 <hr>
 
 
-<div>
-Application Information
-</div>
-
-<table class="table table-stripped">
-    <thead>
-        <th>Name</th>
-        <th>Applicant</th>
-        <th>Total Amount Requested</th>
-        <th>Type</th>
-        <th>Term</th>
-        <th>Rate of Interest</th>
-    </thead>
-    <tbody>
-        <td>{{application.name}}</td>
-        <td>{{application.borrower.name}}</td>
-        <td>{{application.totalLoanAmount}}</td>
-        <td>{{application.type}}</td>
-        <td>{{application.term}}</td>
-        <td>{{application.rateOfInterest}}</td>
-    </tbody>
-</table>
-
-<div>
-Lend Details
-</div>
-
-<table class="table table-stripped">
-    <thead>
-        <th>Lend Time</th>
-        <th>Lender</th>
-        <th>Lend Amount</th>
-        <th>Stauts</th>
-    </thead>
-    <tbody>
-      <ng-container *ngIf="application.lenderDetails">
-        <tr *ngFor="let lenderDetail of application.lenderDetails">
-          <td>{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}</td>
-          <td>{{lenderDetail.lender.name}}</td>
-          <td>{{lenderDetail.amount}}</td>
-          <td *ngIf="lenderDetail.detailStatus=='signed'">Signed</td>
-        </tr>
-      </ng-container>
-      <ng-container *ngIf="!application.lenderDetails">
+<div class="container-fluid row">
+  <div class="col-8">
+    <table class="table table-stripped" style="table-layout: fixed;">
+      <th colspan="4" class="text-center mark">
+      APPLICATION INFORMATION
+      </th>
+      <tbody>
         <tr>
-          No Details
+          <td><strong>Name:</strong></td>
+          <td>{{application.name}}</td>
+          <td><strong>Applicant:</strong></td>
+          <td>{{application.borrower.name}}</td>
         </tr>
-      </ng-container>
-    </tbody>
-</table>
+        <tr>
+          <td><strong>Total Amount Requested:</strong></td>
+          <td>{{application.totalLoanAmount}}</td>
+          <td><strong>Type:</strong></td>
+          <td>{{application.type}}</td>
+        </tr>
+        <tr>
+          <td><strong>Term:</strong></td>
+          <td>{{application.term}}</td>
+          <td><strong>Rate of Interest:</strong></td>
+          <td>{{application.rateOfInterest}}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div  class="col-4">
+    <table class="table table-stripped" style="table-layout: fixed;" >
+        <th colspan="4" class="text-center mark">
+        LEND DETAILS
+        </th>
+        <tbody *ngIf="application.lenderDetails.length!=0">
+          <ng-container >
+            <tr  *ngFor="let lenderDetail of application.lenderDetails">
+              <td colspan="4">
+              {{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}} {{lenderDetail.lender.name}} lended {{lenderDetail.amount}}USDCoins. Status: {{lenderDetail.detailStatus}}.
+              </td>
+            </tr>
+          </ng-container>
+        </tbody>
+    
+        <tbody *ngIf="application.lenderDetails.length==0">
+          <tr>
+            No Details
+          </tr>
+        </tbody>
+    </table>
+  </div>
+</div>
+<hr>
+
+<div class="form-group" *ngIf="application.coveredAmount!=application.totalLoanAmount">
+
+  <label for="">Lend Amount</label>
+  <input type="number" class="form-control" id="" [(ngModel)]="lendAmount" />
+  <label for="">Fee</label>
+  <input type="number" class="form-control" id="" [(ngModel)]="fee" />%%
+
+  <button class="btn btn-primary" (click)="submit()">Submit</button>
+  <button class="btn btn-success" (click)="lendAllLoanApplication(application)">Lend All Amount</button>
+  
+</div>
 
 <div class="form-group">
+  <button class="btn btn-light" *ngIf="canSign()" (click)="deploy()">deploy</button>
+  <button class="btn btn-light" *ngIf="canSign()" (click)="sign()">Sign</button>
+  <button class="btn btn-light"  (click)="signAsBorrower()">Sign as borrower</button>
   <button class="btn btn-light" (click)="back()">Back</button>
-  <button *ngIf="flag" class="btn btn-light" (click)="sign()">Sign</button>
 </div>

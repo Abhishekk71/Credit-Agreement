@@ -17,17 +17,35 @@ import { DashboardComponent } from './components/dashboard/dashboard.component';
 import { AdminDashboardComponent } from './components/dashboard/admin-dashboard/admin-dashboard.component';
 import { BorrowerDashboardComponent } from './components/dashboard/borrower-dashboard/borrower-dashboard.component';
 import { LenderDashboardComponent } from './components/dashboard/lender-dashboard/lender-dashboard.component';
+<<<<<<< HEAD
 import { PartLendComponent } from './components/dashboard/lender-dashboard/part-lend/part-lend.component';
 import { ViewLendDetailsComponent } from './components/dashboard/lender-dashboard/view-lend-details/view-lend-details.component';
+=======
+import { LenderContractsComponent } from './components/dashboard/lender-dashboard/lender-contracts/lender-contracts.component';
+import { ViewLendDetailsComponent } from './components/dashboard/lender-dashboard/view-lend-details/view-lend-details.component';
+import { RepaymentComponent } from './components/dashboard/lender-dashboard/repayment/repayment.component';
+import { CashComponent } from './components/dashboard/lender-dashboard/cash/cash.component';
+import { RepaymentDashboardComponent } from './components/dashboard/borrower-dashboard/repayment-dashboard/repayment-dashboard.component';
+>>>>>>> 048c0d6d755c4ca3df655f9c75cd04721fa2f465
 
 const routes = [
   { path: "home", component: LoginComponent }, 
   { path: "dashboard", component: DashboardComponent }, 
+<<<<<<< HEAD
   { path: "lend/:id", component: PartLendComponent},
   { path: "view/:id", component: ViewLendDetailsComponent},
   { path: "usdcoin", component: USDCoinComponent }, 
   { path: '**', component: LoginComponent },
   
+=======
+  { path: "lend/:id", component: LenderContractsComponent},
+  { path: "view/:id", component: ViewLendDetailsComponent},
+  { path: "lenderrepayment/:id", component: RepaymentComponent},
+  { path: "borrower-repayment", component: RepaymentDashboardComponent},
+  { path: "borrower", component: BorrowerDashboardComponent},
+  { path: "usdcoin", component: USDCoinComponent }, 
+  { path: '**', component: LoginComponent },
+>>>>>>> 048c0d6d755c4ca3df655f9c75cd04721fa2f465
 ];
 
 @NgModule({
@@ -39,8 +57,16 @@ const routes = [
     AdminDashboardComponent,
     BorrowerDashboardComponent,
     LenderDashboardComponent,
+<<<<<<< HEAD
     PartLendComponent,
     ViewLendDetailsComponent
+=======
+    LenderContractsComponent,
+    RepaymentComponent,
+    CashComponent,
+    ViewLendDetailsComponent,
+    RepaymentDashboardComponent
+>>>>>>> 048c0d6d755c4ca3df655f9c75cd04721fa2f465
   ],
   imports: [
     BrowserAnimationsModule,

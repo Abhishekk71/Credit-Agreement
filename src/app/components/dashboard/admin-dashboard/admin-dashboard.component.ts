@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LocalStorageService } from './../../../services/local-storage.service';
 import { Web3Service } from './../../../services/web3.service';
 import { SharedService } from './../../../services/shared.service';
+import { from } from 'rxjs';
 
 declare let require: any;
 const usd_coin_artifacts = require('./../../../../../build/contracts/USDCoin.json');
@@ -66,6 +67,7 @@ export class AdminDashboardComponent implements OnInit {
   approveLoanApplication(application) {
     application["status"] = "APPROVED";
     application["lenderDetails"] = [];
+    application["coveredAmount"] = 0;
     this.localStorageService.updateLoanApplication(application);
     this.refresh();
   }
@@ -85,13 +87,22 @@ export class AdminDashboardComponent implements OnInit {
         console.log('Transaction failed!');
       } else {
         console.log('Transaction complete!');
+        const fromAccount = await this.web3Service.getAccountOf(fromAddress);
+        const toAccount = await this.web3Service.getAccountOf(toAddress);
+        let trans = {
+          time: Date.now(),
+          from: fromAccount,
+          to: toAccount,
+          amount:amount,
+          txHash: transaction.tx,
+        }
+        this.localStorageService.addTransactions(trans);
         this.getBalance();
       }
     } catch (e) {
       console.log(e);
       console.log('Error sending coin; see log.');
     }
-
   }
 
   async sendCoin() {
@@ -105,7 +116,6 @@ export class AdminDashboardComponent implements OnInit {
   }
 
   async sendCoinsToAllLenders(){
-
     const amount = this.amountToAll;
     let allAccounts = await this.web3Service.getAccounts();
     for (let receiver of allAccounts) {
