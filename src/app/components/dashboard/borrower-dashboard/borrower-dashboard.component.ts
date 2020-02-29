@@ -78,17 +78,16 @@ export class BorrowerDashboardComponent implements OnInit {
     this.rateOfInterest = 0;
   }
 
-  view(){
-    let loanApplications = this.localStorageService.getLoanApplications();
-    for(let loanApplication of loanApplications)
-    {
-      this.viewApplications.push(loanApplication);  
-      console.log(this.viewApplications);
-    }
-  }
+  // view(){
+  //   let loanApplications = this.localStorageService.getLoanApplications();
+  //   for(let loanApplication of loanApplications)
+  //   {
+  //     this.viewApplications.push(loanApplication);  
+  //     console.log(this.viewApplications);
+  //   }
+  // }
   removeFromView(){
     
-  }
     this.startingDate = 0;
     this.maturityDate = 0;
     this.expirationDate = 0;

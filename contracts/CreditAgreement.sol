@@ -61,13 +61,13 @@ contract CreditAgreement {
         _;
     }
 
-    function addFacility(address facilityAddress, address lender) public {
-        facilities[lender] = facilityAddress;
-    }
+    // function addFacility(address facilityAddress, address lender) public {
+    //     facilities[lender] = facilityAddress;
+    // }
 
-    function getFacility(address lender) public view returns(address){
-        return facilities[lender];
-    }
+    // function getFacility(address lender) public view returns(address){
+    //     return facilities[lender];
+    // }
 
     function signAsABorrower() public onlyBorrower {
         hasBorrowerSigned = true;
