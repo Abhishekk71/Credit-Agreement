@@ -1,0 +1,33 @@
+<table class="table table-stripped">
+    <thead>
+        <th>Name</th>
+        <th>Applicant</th>
+        <th>Total Amount Requested</th>
+        <th>Type</th>
+        <th>Term</th>
+        <th>Rate of Interest</th>
+        <th>Lenders</th>
+        <th>Actions</th>
+    </thead>
+    <tbody>
+        <tr *ngFor="let application of loanApplications">
+            <ng-container *ngIf="application.status && application.status!= 'REJECTED'">
+                <td>{{application.name}}</td>
+                <td>{{application.borrower.name}}</td>
+                <td>{{application.totalLoanAmount}}</td>
+                <td>{{application.type}}</td>
+                <td>{{application.term}}</td>
+                <td>{{application.rateOfInterest}}</td>
+                <th scope="row">
+                  <li *ngFor="let lenderDetail of application.lenderDetails">{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}   {{lenderDetail.lender.name}}</li>
+                </th>
+                <td>
+                    <button class="btn btn-sm btn-primary m-1" (click)="lendAllLoanApplication(application)">Lend All</button>
+                    <button class="btn btn-sm btn-danger m-1" (click)="lendPartLoanApplication(application)" [routerLink]="['/lend', application.id]">Lend Part of Application</button>
+                    <button class="btn btn-light m-1" (click)="view(application)" [routerLink]="['/view', application.id]">View Lend Details</button>
+                    <!--<button class="btn btn-sm btn-primary m-1" (click)="open()">Test</button>-->
+                </td>
+            </ng-container>
+        </tr>
+    </tbody>
+</table>

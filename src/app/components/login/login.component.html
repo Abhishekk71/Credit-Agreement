@@ -1,0 +1,18 @@
+<div class="jumbotron text-center">
+    <h1 class="display-4">Welcome to Credit Agreement</h1>
+    <p class="lead">This is a blockchain based credit agreement app.</p>
+</div>
+<div class="row justify-content-md-center">
+    <div class="col-4">
+        <h4 class="text-center">Login</h4>
+        <div class="form-group">
+            <label for="">Select an account</label>
+            <select class="form-control" [(ngModel)]="account">
+              <ng-container *ngIf="accounts">
+                <option *ngFor="let account of accounts" [value]="account.address">{{account.name}} - [{{account.type}}]</option>
+              </ng-container>
+            </select>
+        </div>
+        <button class="btn btn-primary px-3" (click)="login()">Login</button>
+    </div>
+</div>

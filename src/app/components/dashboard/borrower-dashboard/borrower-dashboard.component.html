@@ -1,0 +1,112 @@
+<ul class="nav nav-tabs" id="myTab" role="tablist">
+    <li class="nav-item">
+        <a class="nav-link active" id="view-tab" data-toggle="tab" href="#view" role="tab" aria-controls="view" aria-selected="true">View Application Details</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="create-tab" data-toggle="tab" href="#create" role="tab" aria-controls="create" aria-selected="false">Create</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="repaymentHistory-tab" data-toggle="tab" href="#repaymentHistory" role="tab" aria-controls="repaymentHistory" aria-selected="false">Repayment History</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link" id="viewContracts-tab" data-toggle="tab" href="#viewContracts" role="tab" aria-controls="viewContracts" aria-selected="false">View Contracts</a>
+    </li>
+</ul>
+<div class="tab-content" id="myTabContent">
+    <div class="tab-pane fade" id="create" role="tabpanel" aria-labelledby="create-tab">
+        <div class="form-group">
+
+            <label for="">Name</label>
+            <input type="text" class="form-control" id="" [(ngModel)]="name" />
+            <label for="">Total Amount</label>
+            <input type="number" class="form-control" id="" [(ngModel)]="totalLoanAmount" />
+
+            <label for=""> Select Type of loan</label>
+            <select class="form-control" id="" [(ngModel)]="type">
+              <option value="REVOLVER">Revolver</option>
+              <option value="TERM_LOAN">Term Loan</option>
+            </select>
+
+             <label>Select Repayment Options</label>
+             <select class="form-control">
+                 <option>Monthly</option>
+                 <option>Quaterly</option>
+                 <option>Semi-Annual</option>
+                 <option>Annually</option>
+             </select>
+
+            <label for="">Term (in years)</label>
+            <input type="number" class="form-control" id="" [(ngModel)]="term" />
+
+            <label>Select Rate of interest</label>
+            <select class="form-control" [(ngModel)]="rateOfInterest" >
+                <option>5%</option>
+                <option>6%</option>
+                <option>7%</option>
+                <option>8%</option>
+                <option>9%</option>
+                <option>10%</option>
+                <option>11%</option>
+                <option>12%</option>
+            </select>
+
+             <br>
+            <button class="btn btn-primary" (click)="submit()">Submit</button>
+        </div>
+    </div>
+    <div class="tab-pane fade show active" id="view" role="tabpanel" aria-labelledby="view-tab">
+        <table class="table table-stripped">
+            <thead>
+                <th>Name</th>
+                <th>Applicant</th>
+                 <th>Total Amount Requested</th>
+                <th>Type</th>
+                <th>Term</th>
+                <th>Rate of Interest</th>
+                <th>Lenders</th>
+                <th>Actions</th>
+            </thead>
+            <tbody>
+                <tr *ngFor="let application of loanApplications">
+                    <ng-container *ngIf="application.status">
+                        <td>{{application.name}}</td>
+                        <td>{{application.borrower.name}}</td>
+                        <td>{{application.totalLoanAmount}}</td>
+                        <td>{{application.type}}</td>
+                        <td>{{application.term}}</td>
+                        <td>{{application.rateOfInterest}}</td>
+                        <th scope="row">
+                            <li *ngFor="let lenderDetail of application.lenderDetails">{{lenderDetail.ID | date:'yyyy-MM-dd HH:mm:ss'}}   {{lenderDetail.lender.name}}</li>
+                        </th>
+                        <td>
+                        <button class="btn btn-light m-1" (click)="view(application)">View Lend Details</button>
+                </td>
+            </ng-container>
+        </tr>
+    </tbody>
+</table>
+    </div>
+    <div class="tab-pane fade" id="repaymentHistory" role="tabpanel" aria-labelledby="repaymentHistory-tab">
+        <table class="table table-stripped">
+            <thead>
+                <th>Repayment Address</th>
+                <th>Date</th>
+                 <th>Name of the Lender</th>
+                <th>Amount</th>
+                <th>Action</th>
+            </thead>
+        </table>   
+    </div>
+    <div class="tab-pane fade" id="viewContracts" role="tabpanel" aria-labelledby="viewContracts-tab">
+        <table class="table table-stripped">
+            <thead>
+                <th>Contract Address</th>
+                <th>Date</th>
+                 <th>Name of the Lender</th>
+                <th>Amount</th>
+                <th>Action</th>
+            </thead>
+        </table>   
+    </div>
+
+</div>

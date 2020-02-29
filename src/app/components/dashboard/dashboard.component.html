@@ -1,0 +1,20 @@
+<div>
+    <div>Welcome
+        <b *ngIf="account">{{account.name}}</b>
+        <br> You have <span id="balance">{{accountBalance}}</span> USD
+        <button class="btn btn-sm btn-danger float-right" (click)="logout()">Logout</button>
+    </div>
+</div>
+<hr>
+
+<div *ngIf="account.type == 'ADMIN'">
+    <app-admin-dashboard></app-admin-dashboard>
+</div>
+
+<div *ngIf="account.type == 'BORROWER'">
+    <app-borrower-dashboard></app-borrower-dashboard>
+</div>
+
+<div *ngIf="account.type == 'LENDER'">
+    <app-lender-dashboard></app-lender-dashboard>
+</div>

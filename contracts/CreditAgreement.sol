@@ -8,10 +8,14 @@ contract CreditAgreement {
 
     address borrower;
     bool hasBorrowerSigned;
+    uint intrestMax;
+    uint intrestMin;
+           
 
     struct Lender {
         address lender;
         uint share;
+        uint interest;
         bool hasSigned;
     }
     Lender[] lenders;
@@ -23,11 +27,13 @@ contract CreditAgreement {
 
     Facility[] facilities;
 
-    constructor(address _borrower, address[] memory _lenders, uint[] memory _lenderShares, uint _amount, uint _closingDate ) public {
+    constructor(address _borrower, address[] memory _lenders, uint[] memory _lenderShares, uint _amount, uint _closingDate, uint _intrestMax, uint _intrestMin) public {
         owner = msg.sender;
         borrower = _borrower;
+        intrestMax = _intrestMax;
+        intrestMin = _intrestMin;
         for(uint i = 0; i < lenders.length; i++) {
-            lenders.push(Lender({lender: _lenders[i], share: _lenderShares[i], hasSigned: false}));
+            lenders.push(Lender({lender: _lenders[i], share: _lenderShares[i],intrestMin, hasSigned: false}));
         }
         amount = _amount;
         closingDate = _closingDate;
@@ -65,6 +71,7 @@ contract CreditAgreement {
             agreementDate = now;
         }
     }
+    
 
     function signAsALender() public returns(bool){
     //function signAsALender() public oblyBorrower {
